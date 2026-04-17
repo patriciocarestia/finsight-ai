@@ -1,3 +1,16 @@
+using System.Text;
+using FinsightAI.API.Middleware;
+using FinsightAI.Application;
+using FinsightAI.Infrastructure;
+using FinsightAI.Infrastructure.Data;
+using FinsightAI.Infrastructure.Services;
+using Hangfire;
+using Hangfire.Storage.SQLite;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddApplication();

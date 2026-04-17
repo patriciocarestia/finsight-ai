@@ -1,3 +1,8 @@
+using FinsightAI.Application.Interfaces;
+using FinsightAI.Domain.Entities;
+using FinsightAI.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace FinsightAI.Infrastructure.Repositories;
 
 public class RateRepository : IRateRepository

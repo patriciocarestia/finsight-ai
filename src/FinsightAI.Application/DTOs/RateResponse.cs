@@ -1,3 +1,5 @@
+using FinsightAI.Domain.Entities;
+
 namespace FinsightAI.Application.DTOs;
 
 public record RateResponse

@@ -1,3 +1,7 @@
+using FinsightAI.Application.DTOs;
+using FinsightAI.Application.Interfaces;
+using MediatR;
+
 namespace FinsightAI.Application.UseCases.Rates.Queries.GetLatestRates;
 
 public class GetLatestRatesQueryHandler : IRequestHandler<GetLatestRatesQuery, LatestRatesResponse>

@@ -1,8 +1,3 @@
-using FinsightAI.Application.Interfaces;
-using FinsightAI.Domain.Entities;
-using FinsightAI.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
-
 namespace FinsightAI.Infrastructure.Repositories;
 
 public class RateRepository : IRateRepository
@@ -34,6 +29,26 @@ public class RateRepository : IRateRepository
         return result;
     }
 
+    public async Task<IEnumerable<ExchangeRate>> GetPreviousDayRatesAsync(CancellationToken cancellationToken)
+    {
+        var types = new[] { "oficial", "blue", "mep", "ccl", "cripto" };
+        var today = DateTime.UtcNow.Date;
+        var result = new List<ExchangeRate>();
+
+        foreach (var type in types)
+        {
+            var previous = await this.context.ExchangeRates
+                .Where(r => r.Type == type && r.RecordedAt < today)
+                .OrderByDescending(r => r.RecordedAt)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (previous is not null)
+                result.Add(previous);
+        }
+
+        return result;
+    }
+
     public async Task<IEnumerable<ExchangeRate>> GetRateHistoryAsync(string type, int days, CancellationToken cancellationToken)
     {
         var since = DateTime.UtcNow.AddDays(-days);
@@ -57,6 +72,26 @@ public class RateRepository : IRateRepository
 
             if (latest is not null)
                 result.Add(latest);
+        }
+
+        return result;
+    }
+
+    public async Task<IEnumerable<CryptoRate>> GetPreviousDayCryptoRatesAsync(CancellationToken cancellationToken)
+    {
+        var symbols = new[] { "BTC", "ETH" };
+        var today = DateTime.UtcNow.Date;
+        var result = new List<CryptoRate>();
+
+        foreach (var symbol in symbols)
+        {
+            var previous = await this.context.CryptoRates
+                .Where(r => r.Symbol == symbol && r.RecordedAt < today)
+                .OrderByDescending(r => r.RecordedAt)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (previous is not null)
+                result.Add(previous);
         }
 
         return result;

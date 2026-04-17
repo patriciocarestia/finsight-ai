@@ -3,6 +3,7 @@ export interface ExchangeRate {
   type: string;
   buy: number;
   sell: number;
+  changePercent: number;
   recordedAt: string;
 }
 
@@ -11,7 +12,7 @@ export interface CryptoRate {
   symbol: string;
   priceUsd: number;
   priceArs: number;
-  changePercent24h: number;
+  changePercent: number;
   recordedAt: string;
 }
 

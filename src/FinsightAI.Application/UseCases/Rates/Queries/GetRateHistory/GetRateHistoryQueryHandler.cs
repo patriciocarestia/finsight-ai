@@ -17,6 +17,6 @@ public class GetRateHistoryQueryHandler : IRequestHandler<GetRateHistoryQuery, I
     public async Task<IEnumerable<RateResponse>> Handle(GetRateHistoryQuery request, CancellationToken cancellationToken)
     {
         var rates = await this.rateRepository.GetRateHistoryAsync(request.Type, request.Days, cancellationToken);
-        return rates.Select(RateResponse.FromEntity);
+        return rates.Select(r => RateResponse.FromEntity(r));
     }
 }

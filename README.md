@@ -10,8 +10,6 @@
 
 **[Live Demo](https://finsight-ai.azurestaticapps.net)** · **[API Docs](https://finsight-ai-api.azurewebsites.net/swagger)**
 
-![FinSight AI Dashboard](./docs/dashboard.png)
-
 ---
 
 ## Screenshots

@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/FinsightAI.API/FinsightAI.API.csproj" />
+    <Project Path="src/FinsightAI.Application/FinsightAI.Application.csproj" />
+    <Project Path="src/FinsightAI.Domain/FinsightAI.Domain.csproj" />
+    <Project Path="src/FinsightAI.Infrastructure/FinsightAI.Infrastructure.csproj" />
+    <Project Path="src/FinsightAI.Tests/FinsightAI.Tests.csproj" />
+  </Folder>
+</Solution>

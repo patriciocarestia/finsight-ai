@@ -27,16 +27,16 @@ Argentina has multiple parallel exchange rates (Oficial, Blue, MEP, CCL, Cripto)
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
+| Layer    | Technology                                                    |
+| -------- | ------------------------------------------------------------- |
 | Frontend | Angular 19, TypeScript, NgRx, Signals, Tailwind CSS, Chart.js |
-| Backend | .NET 10, C#, Clean Architecture, MediatR (CQRS) |
-| Database | SQLite (EF Core code-first) |
-| AI | Google Gemini 2.5 Flash |
-| Jobs | Hangfire (in-process scheduled jobs) |
-| Auth | JWT Bearer tokens |
-| CI/CD | GitHub Actions |
-| Hosting | Azure Static Web Apps + Azure App Service F1 |
+| Backend  | .NET 10, C#, Clean Architecture, MediatR (CQRS)               |
+| Database | SQLite (EF Core code-first)                                   |
+| AI       | Google Gemini 2.5 Flash                                       |
+| Jobs     | Hangfire (in-process scheduled jobs)                          |
+| Auth     | JWT Bearer tokens                                             |
+| CI/CD    | GitHub Actions                                                |
+| Hosting  | Azure Static Web Apps + Azure App Service F1                  |
 
 ## Architecture
 
@@ -103,17 +103,17 @@ dotnet test src/FinsightAI.Tests
 
 ## API Endpoints
 
-| Method | Route | Auth | Description |
-|---|---|---|---|
-| POST | `/api/auth/register` | ❌ | Create account |
-| POST | `/api/auth/login` | ❌ | Get JWT token |
-| GET | `/api/rates/latest` | ❌ | Current exchange + crypto rates |
-| GET | `/api/rates/history?type=blue&days=30` | ❌ | Historical rate data |
-| GET | `/api/portfolio` | ✅ | User's positions |
-| POST | `/api/portfolio` | ✅ | Add position |
-| PUT | `/api/portfolio/{id}` | ✅ | Update position |
-| DELETE | `/api/portfolio/{id}` | ✅ | Delete position |
-| POST | `/api/analysis` | ✅ | Trigger AI analysis |
+| Method | Route                                  | Auth | Description                     |
+| ------ | -------------------------------------- | ---- | ------------------------------- |
+| POST   | `/api/auth/register`                   | 🔓   | Create account                  |
+| POST   | `/api/auth/login`                      | 🔓   | Get JWT token                   |
+| GET    | `/api/rates/latest`                    | 🔓   | Current exchange + crypto rates |
+| GET    | `/api/rates/history?type=blue&days=30` | 🔓   | Historical rate data            |
+| GET    | `/api/portfolio`                       | ✅   | User's positions                |
+| POST   | `/api/portfolio`                       | ✅   | Add position                    |
+| PUT    | `/api/portfolio/{id}`                  | ✅   | Update position                 |
+| DELETE | `/api/portfolio/{id}`                  | ✅   | Delete position                 |
+| POST   | `/api/analysis`                        | ✅   | Trigger AI analysis             |
 
 ## Project Structure
 

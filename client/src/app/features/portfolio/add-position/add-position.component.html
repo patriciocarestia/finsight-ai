@@ -1,0 +1,49 @@
+<div class="card">
+  <h2 class="text-lg font-semibold text-white mb-4">Agregar Posición</h2>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="label">Tipo de activo</label>
+        <select formControlName="assetType" class="input">
+          @for (type of assetTypes; track type.value) {
+            <option [value]="type.value">{{ type.label }}</option>
+          }
+        </select>
+      </div>
+      <div>
+        <label class="label">Cantidad</label>
+        <input type="number" formControlName="amount" class="input" placeholder="0.00" step="any" />
+      </div>
+      <div>
+        <label class="label">Precio de compra (ARS)</label>
+        <input type="number" formControlName="purchasePrice" class="input" placeholder="0.00" />
+      </div>
+      <div>
+        <label class="label">Fecha de compra</label>
+        <input type="date" formControlName="purchaseDate" class="input" />
+      </div>
+      @if (form.get('assetType')?.value === 'PLAZO_FIJO') {
+        <div>
+          <label class="label">Tasa anual (%)</label>
+          <input type="number" formControlName="interestRate" class="input" placeholder="140.00" />
+        </div>
+        <div>
+          <label class="label">Fecha de vencimiento</label>
+          <input type="date" formControlName="maturityDate" class="input" />
+        </div>
+      }
+      <div class="md:col-span-2">
+        <label class="label">Notas (opcional)</label>
+        <input type="text" formControlName="notes" class="input" placeholder="Ej: compra en cuotas" />
+      </div>
+    </div>
+    <div class="flex gap-3">
+      <button type="submit"
+              class="btn-primary"
+              [disabled]="form.invalid || (saving$ | async)">
+        @if (saving$ | async) { Guardando... } @else { Agregar }
+      </button>
+      <button type="button" class="btn-secondary" (click)="onCancel()">Cancelar</button>
+    </div>
+  </form>
+</div>

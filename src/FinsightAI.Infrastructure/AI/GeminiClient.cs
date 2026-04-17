@@ -58,17 +58,13 @@ public class GeminiClient : IGeminiClient
 
                 if (response.StatusCode == HttpStatusCode.ServiceUnavailable || response.StatusCode == HttpStatusCode.TooManyRequests)
                 {
-                    this.logger.LogWarning(
-                        "Gemini {Model} overloaded (attempt {Attempt}/3). Status: {Status}",
-                        model, attempt, response.StatusCode);
-
                     if (attempt < 3)
                     {
                         await Task.Delay(TimeSpan.FromSeconds(attempt * 2), cancellationToken);
                         continue;
                     }
 
-                    return null; // signal caller to try fallback model
+                    return null;
                 }
 
                 if (!response.IsSuccessStatusCode)
@@ -85,12 +81,8 @@ public class GeminiClient : IGeminiClient
                 var text = result?.Candidates?.FirstOrDefault()?.Content?.Parts?.FirstOrDefault()?.Text;
 
                 if (string.IsNullOrWhiteSpace(text))
-                {
-                    this.logger.LogWarning("Gemini {Model} returned empty content. Body: {Body}", model, responseBody[..Math.Min(300, responseBody.Length)]);
                     return null;
-                }
 
-                this.logger.LogInformation("Gemini response OK. Model: {Model}", model);
                 return text;
             }
             catch (Exception ex)

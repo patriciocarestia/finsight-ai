@@ -1,26 +1,22 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using FinsightAI.Domain.Entities;
-using Microsoft.Extensions.Logging;
 
 namespace FinsightAI.Infrastructure.ExternalApis;
 
 public class DolarApiClient
 {
     private readonly HttpClient httpClient;
-    private readonly ILogger<DolarApiClient> logger;
 
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true
     };
 
-    public DolarApiClient(HttpClient httpClient, ILogger<DolarApiClient> logger)
+    public DolarApiClient(HttpClient httpClient)
     {
         ArgumentNullException.ThrowIfNull(httpClient, nameof(httpClient));
-        ArgumentNullException.ThrowIfNull(logger, nameof(logger));
         this.httpClient = httpClient;
-        this.logger = logger;
     }
 
     public async Task<IEnumerable<ExchangeRate>> FetchAllRatesAsync(CancellationToken cancellationToken)
@@ -41,9 +37,8 @@ public class DolarApiClient
                 RecordedAt = DateTime.UtcNow
             });
         }
-        catch (Exception ex)
+        catch
         {
-            this.logger.LogError(ex, "Failed to fetch rates from DolarApi");
             return [];
         }
     }
@@ -85,9 +80,8 @@ public class DolarApiClient
                     };
                 });
         }
-        catch (Exception ex)
+        catch
         {
-            this.logger.LogError(ex, "Failed to fetch historical rates for {ApiPath}", apiPath);
             return [];
         }
     }

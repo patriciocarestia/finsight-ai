@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
@@ -11,41 +11,7 @@ import { filter } from 'rxjs/operators';
 @Component({
   selector: 'app-login',
   imports: [ReactiveFormsModule, RouterLink, AsyncPipe],
-  template: `
-    <div class="min-h-[80vh] flex items-center justify-center">
-      <div class="card w-full max-w-md">
-        <h1 class="text-2xl font-bold text-white mb-2">Iniciar sesión</h1>
-        <p class="text-slate-400 mb-6 text-sm">Ingresá a tu cuenta de FinSight AI</p>
-
-        @if (error$ | async; as error) {
-          <div class="bg-red-900/30 border border-red-700 text-red-400 rounded-lg px-4 py-3 mb-4 text-sm">
-            {{ error }}
-          </div>
-        }
-
-        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
-          <div>
-            <label class="label">Email</label>
-            <input type="email" formControlName="email" class="input" placeholder="tu@email.com" />
-          </div>
-          <div>
-            <label class="label">Contraseña</label>
-            <input type="password" formControlName="password" class="input" placeholder="••••••" />
-          </div>
-          <button type="submit"
-                  class="btn-primary w-full"
-                  [disabled]="form.invalid || (loading$ | async)">
-            @if (loading$ | async) { Ingresando... } @else { Ingresar }
-          </button>
-        </form>
-
-        <p class="text-center text-slate-400 text-sm mt-6">
-          ¿No tenés cuenta?
-          <a routerLink="/auth/register" class="text-blue-400 hover:text-blue-300">Registrate</a>
-        </p>
-      </div>
-    </div>
-  `
+  templateUrl: './login.component.html'
 })
 export class LoginComponent {
   private readonly store = inject(Store);

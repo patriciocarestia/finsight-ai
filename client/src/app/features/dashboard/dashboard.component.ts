@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { AsyncPipe, DecimalPipe, DatePipe } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
@@ -25,116 +25,7 @@ const RATE_LABELS: Record<string, string> = {
 @Component({
   selector: 'app-dashboard',
   imports: [AsyncPipe, DecimalPipe, DatePipe, RateCardComponent, BaseChartDirective],
-  template: `
-    <div class="space-y-8">
-      <!-- Header -->
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-3xl font-bold text-white">Dashboard</h1>
-          <p class="text-slate-400 mt-1 text-sm">
-            @if (lastFetched$ | async; as ts) {
-              Última actualización: {{ ts | date:'HH:mm' }}
-            }
-          </p>
-        </div>
-        <button (click)="onRefresh()" class="btn-secondary flex items-center gap-2" [disabled]="loading$ | async">
-          <span>&#8635;</span> Actualizar
-        </button>
-      </div>
-
-      <!-- Loading -->
-      @if (loading$ | async) {
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-          @for (i of [1,2,3,4,5]; track i) {
-            <div class="card animate-pulse bg-slate-800/50 h-28"></div>
-          }
-        </div>
-      }
-
-      <!-- Exchange Rates -->
-      @if (exchangeRates$ | async; as rates) {
-        @if (rates.length > 0) {
-          <section>
-            <h2 class="text-lg font-semibold text-slate-300 mb-4">Cotizaciones del Dólar</h2>
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-              @for (rate of rates; track rate.id) {
-                <app-rate-card
-                  [label]="getRateLabel(rate.type)"
-                  [buy]="rate.buy"
-                  [sell]="rate.sell"
-                  [change]="0" />
-              }
-            </div>
-          </section>
-        }
-      }
-
-      <!-- Crypto Rates -->
-      @if (cryptoRates$ | async; as cryptos) {
-        @if (cryptos.length > 0) {
-          <section>
-            <h2 class="text-lg font-semibold text-slate-300 mb-4">Criptomonedas</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              @for (crypto of cryptos; track crypto.id) {
-                <div class="card">
-                  <div class="flex items-center justify-between mb-3">
-                    <span class="text-slate-300 font-semibold text-lg">{{ crypto.symbol }}</span>
-                    <span class="text-xs px-2 py-1 rounded-full"
-                          [class]="crypto.changePercent24h >= 0 ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'">
-                      {{ crypto.changePercent24h >= 0 ? '+' : '' }}{{ crypto.changePercent24h | number:'1.2-2' }}%
-                    </span>
-                  </div>
-                  <div class="text-2xl font-bold text-white">
-                    USD {{ crypto.priceUsd | number:'1.0-0' }}
-                  </div>
-                  <div class="text-slate-400 mt-1 text-sm">
-                    ARS {{ crypto.priceArs | number:'1.0-0' }}
-                  </div>
-                </div>
-              }
-            </div>
-          </section>
-        }
-      }
-
-      <!-- Historical Chart -->
-      <section class="card">
-        <div class="flex items-center justify-between mb-6">
-          <h2 class="text-lg font-semibold text-slate-300">Histórico</h2>
-          <div class="flex items-center gap-2">
-            <select (change)="onTypeChange($any($event.target).value)"
-                    class="input w-auto text-sm">
-              <option value="blue">Blue</option>
-              <option value="oficial">Oficial</option>
-              <option value="mep">MEP</option>
-              <option value="ccl">CCL</option>
-            </select>
-            <div class="flex gap-1">
-              @for (d of dayOptions; track d) {
-                <button (click)="onDaysChange(d)"
-                        class="px-3 py-1 rounded text-sm transition-colors"
-                        [class]="selectedDays() === d ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-400 hover:bg-slate-600'">
-                  {{ d }}d
-                </button>
-              }
-            </div>
-          </div>
-        </div>
-
-        @if (history$ | async; as history) {
-          @if (history.length > 0) {
-            <canvas baseChart
-                    [data]="buildChartData(history)"
-                    [options]="chartOptions"
-                    type="line">
-            </canvas>
-          } @else {
-            <div class="text-center text-slate-500 py-12">No hay datos históricos disponibles</div>
-          }
-        }
-      </section>
-    </div>
-  `
+  templateUrl: './dashboard.component.html'
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   private readonly store = inject(Store);
@@ -204,7 +95,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       (a, b) => new Date(a.recordedAt).getTime() - new Date(b.recordedAt).getTime()
     );
 
-    // One point per calendar day — last value wins (covers today's intraday Hangfire records)
     const byDay = new Map<string, number>();
     for (const r of sorted) {
       const day = new Date(r.recordedAt).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' });

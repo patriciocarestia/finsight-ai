@@ -10,6 +10,24 @@
 
 **[Live Demo](https://finsight-ai.azurestaticapps.net)** · **[API Docs](https://finsight-ai-api.azurewebsites.net/swagger)**
 
+![FinSight AI Dashboard](./docs/dashboard.png)
+
+---
+
+## Screenshots
+
+### Dashboard
+
+![Dashboard](./docs/dashboard.png)
+
+### AI Analysis
+
+![AI Analysis](./docs/analysis.png)
+
+### Portfolio
+
+![Portfolio](./docs/portfolio.png)
+
 ---
 
 ## The Problem
@@ -40,7 +58,7 @@ Argentina has multiple parallel exchange rates (Oficial, Blue, MEP, CCL, Cripto)
 
 ## Architecture
 
-```
+```text
 ┌─────────────────────────────────┐
 │         Angular 19 SPA          │
 │  NgRx Store · Signals · Charts  │
@@ -48,57 +66,20 @@ Argentina has multiple parallel exchange rates (Oficial, Blue, MEP, CCL, Cripto)
                  │ HTTP + JWT
 ┌────────────────▼────────────────┐
 │       ASP.NET Core Web API      │
-│  Controllers → MediatR → CQRS  │
+│  Controllers → MediatR → CQRS   │
 ├─────────────────────────────────┤
 │ Application Layer (Use Cases)   │
 │  Commands · Queries · Handlers  │
 ├─────────────────────────────────┤
-│  Infrastructure Layer           │
-│  EF Core · Repositories ·      │
-│  DolarAPI · CoinGecko · Gemini  │
+│ Infrastructure Layer            │
+│ EF Core · Repositories ·        │
+│ DolarAPI · CoinGecko · Gemini   │
 ├─────────────────────────────────┤
-│     SQLite Database             │
+│ SQLite Database                 │
 └─────────────────────────────────┘
          ▲
   Hangfire (every 15 min)
   fetches & stores rates
-```
-
-## Getting Started
-
-### Prerequisites
-
-- [.NET 10 SDK](https://dotnet.microsoft.com/download)
-- [Node.js 22 LTS](https://nodejs.org)
-- Angular CLI: `npm install -g @angular/cli`
-- [Google AI Studio API key](https://aistudio.google.com) (free)
-
-### Backend
-
-```bash
-cd src/FinsightAI.API
-
-# Add your Gemini API key (never commit this file)
-# Edit appsettings.Development.json → Gemini:ApiKey
-
-dotnet run
-# API: http://localhost:5158
-# Swagger: http://localhost:5158/swagger
-```
-
-### Frontend
-
-```bash
-cd client
-npm install --legacy-peer-deps
-ng serve
-# App: http://localhost:4200
-```
-
-### Run Tests
-
-```bash
-dotnet test src/FinsightAI.Tests
 ```
 
 ## API Endpoints

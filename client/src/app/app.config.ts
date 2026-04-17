@@ -1,6 +1,7 @@
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideMarkdown } from 'ngx-markdown';
 import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
@@ -29,6 +30,7 @@ export const appConfig: ApplicationConfig = {
       [analysisFeature.name]: analysisFeature.reducer
     }),
     provideEffects([AuthEffects, RatesEffects, PortfolioEffects, AnalysisEffects]),
-    provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() })
+    provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
+    provideMarkdown()
   ]
 };

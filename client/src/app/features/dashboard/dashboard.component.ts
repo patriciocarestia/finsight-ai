@@ -162,6 +162,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
         grid: { color: '#1e293b' }
       },
       y: {
+        beginAtZero: false,
+        grace: '12%',
         ticks: { color: '#94a3b8' },
         grid: { color: '#1e293b' }
       }
@@ -198,10 +200,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   buildChartData(history: ExchangeRate[]): ChartConfiguration['data'] {
+    const sorted = [...history].sort(
+      (a, b) => new Date(a.recordedAt).getTime() - new Date(b.recordedAt).getTime()
+    );
+
+    // One point per calendar day — last value wins (covers today's intraday Hangfire records)
+    const byDay = new Map<string, number>();
+    for (const r of sorted) {
+      const day = new Date(r.recordedAt).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' });
+      byDay.set(day, r.sell);
+    }
+
+    const entries = [...byDay.entries()];
+
     return {
-      labels: history.map(r => new Date(r.recordedAt).toLocaleDateString('es-AR')),
+      labels: entries.map(([day]) => day),
       datasets: [{
-        data: history.map(r => r.sell),
+        data: entries.map(([, sell]) => sell),
         borderColor: '#3b82f6',
         backgroundColor: 'rgba(59, 130, 246, 0.1)',
         fill: true,

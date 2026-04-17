@@ -22,9 +22,11 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<RatesFetcherService>();
+        services.AddScoped<HistoricalDataSeeder>();
 
         services.AddHttpClient<DolarApiClient>();
-        services.AddHttpClient<CoinGeckoClient>();
+        services.AddHttpClient<CoinGeckoClient>(client =>
+            client.DefaultRequestHeaders.Add("User-Agent", "FinsightAI/1.0 (portfolio tracker)"));
         services.AddHttpClient<IGeminiClient, GeminiClient>();
 
         return services;

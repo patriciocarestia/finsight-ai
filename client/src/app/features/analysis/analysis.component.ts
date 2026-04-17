@@ -1,6 +1,7 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { AsyncPipe, DatePipe } from '@angular/common';
+import { MarkdownComponent } from 'ngx-markdown';
 import { analyzePortfolio } from '../../store/analysis/analysis.actions';
 import {
   selectAnalysis,
@@ -11,7 +12,7 @@ import {
 
 @Component({
   selector: 'app-analysis',
-  imports: [AsyncPipe, DatePipe],
+  imports: [AsyncPipe, DatePipe, MarkdownComponent],
   template: `
     <div class="space-y-6">
       <div class="flex items-center justify-between">
@@ -56,9 +57,7 @@ import {
               <span class="text-slate-500 text-xs">{{ generatedAt | date:'dd/MM/yyyy HH:mm' }}</span>
             }
           </div>
-          <div class="prose prose-invert max-w-none">
-            <div class="text-slate-300 leading-relaxed whitespace-pre-wrap text-sm">{{ analysis }}</div>
-          </div>
+          <markdown class="markdown-analysis" [data]="analysis" />
         </div>
       }
 

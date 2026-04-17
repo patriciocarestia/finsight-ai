@@ -69,6 +69,52 @@ public class CoinGeckoClient
         }
     }
 
+    public async Task<IEnumerable<CryptoRate>> FetchMarketChartAsync(string coinId, string symbol, IReadOnlyDictionary<DateTime, decimal> blueRateByDate, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var url = $"https://api.coingecko.com/api/v3/coins/{coinId}/market_chart?vs_currency=usd&days=90";
+            var response = await this.httpClient.GetAsync(url, cancellationToken);
+
+            var json = await response.Content.ReadAsStringAsync(cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                this.logger.LogError("CoinGecko error for {CoinId}. Status: {Status}, Body: {Body}",
+                    coinId, response.StatusCode, json[..Math.Min(300, json.Length)]);
+                return [];
+            }
+
+            var data = JsonSerializer.Deserialize<MarketChartDto>(json, JsonOptions);
+
+            if (data?.Prices is null)
+                return [];
+
+            var fallbackBlue = blueRateByDate.Values.DefaultIfEmpty(1200m).Last();
+
+            return data.Prices.Select(p =>
+            {
+                var date = DateTimeOffset.FromUnixTimeMilliseconds((long)p[0]).UtcDateTime;
+                blueRateByDate.TryGetValue(date.Date, out var blueRate);
+                if (blueRate == 0) blueRate = fallbackBlue;
+
+                return new CryptoRate
+                {
+                    Symbol = symbol,
+                    PriceUsd = Math.Round(p[1], 2),
+                    PriceArs = Math.Round(p[1] * blueRate, 2),
+                    ChangePercent24h = 0,
+                    RecordedAt = date
+                };
+            });
+        }
+        catch (Exception ex)
+        {
+            this.logger.LogError(ex, "Failed to fetch market chart for {CoinId}", coinId);
+            return [];
+        }
+    }
+
     private record CoinPriceDto
     {
         [JsonPropertyName("usd")]
@@ -76,5 +122,11 @@ public class CoinGeckoClient
 
         [JsonPropertyName("usd_24h_change")]
         public decimal UsdChange24h { get; init; }
+    }
+
+    private record MarketChartDto
+    {
+        [JsonPropertyName("prices")]
+        public List<List<decimal>>? Prices { get; init; }
     }
 }

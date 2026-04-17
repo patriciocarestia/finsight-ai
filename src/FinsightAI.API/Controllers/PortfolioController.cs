@@ -38,7 +38,7 @@ public class PortfolioController : BaseController
     {
         command.UserId = this.CurrentUserId;
         var result = await this.Mediator.Send(command, cancellationToken);
-        return CreatedAtAction(nameof(GetPositionsAsync), result);
+        return Created(string.Empty, result);
     }
 
     /// <summary>

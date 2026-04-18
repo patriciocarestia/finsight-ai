@@ -18,7 +18,10 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, AuthRespo
         this.jwtService = jwtService;
     }
 
-    public async Task<AuthResponse> Handle(RegisterCommand request, CancellationToken cancellationToken)
+    public async Task<AuthResponse> Handle(
+        RegisterCommand request,
+        CancellationToken cancellationToken
+    )
     {
         var existing = await this.userRepository.GetByEmailAsync(request.Email, cancellationToken);
         if (existing is not null)
@@ -27,7 +30,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, AuthRespo
         var user = new User
         {
             Email = request.Email,
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password)
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
         };
 
         var created = await this.userRepository.AddAsync(user, cancellationToken);
@@ -37,7 +40,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, AuthRespo
         {
             Token = token,
             Email = created.Email,
-            ExpiresAt = DateTime.UtcNow.AddDays(7)
+            ExpiresAt = DateTime.UtcNow.AddDays(7),
         };
     }
 }

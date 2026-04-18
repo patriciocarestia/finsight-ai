@@ -17,22 +17,32 @@ public class GeminiClient : IGeminiClient
     private const string FallbackModelId = "gemini-2.0-flash";
     private const string BaseUrl = "https://generativelanguage.googleapis.com/v1beta/models";
 
-    public GeminiClient(HttpClient httpClient, IConfiguration configuration, ILogger<GeminiClient> logger)
+    public GeminiClient(
+        HttpClient httpClient,
+        IConfiguration configuration,
+        ILogger<GeminiClient> logger
+    )
     {
         ArgumentNullException.ThrowIfNull(httpClient, nameof(httpClient));
         ArgumentNullException.ThrowIfNull(configuration, nameof(configuration));
         ArgumentNullException.ThrowIfNull(logger, nameof(logger));
         this.httpClient = httpClient;
         this.logger = logger;
-        this.apiKey = configuration["Gemini:ApiKey"] ?? throw new InvalidOperationException("Gemini:ApiKey is not configured.");
+        this.apiKey =
+            configuration["Gemini:ApiKey"]
+            ?? throw new InvalidOperationException("Gemini:ApiKey is not configured.");
         this.primaryModelId = configuration["Gemini:Model"] ?? "gemini-2.5-flash";
     }
 
-    public async Task<string> GenerateContentAsync(string prompt, CancellationToken cancellationToken)
+    public async Task<string> GenerateContentAsync(
+        string prompt,
+        CancellationToken cancellationToken
+    )
     {
-        var modelsToTry = this.primaryModelId == FallbackModelId
-            ? new[] { this.primaryModelId }
-            : new[] { this.primaryModelId, FallbackModelId };
+        var modelsToTry =
+            this.primaryModelId == FallbackModelId
+                ? new[] { this.primaryModelId }
+                : new[] { this.primaryModelId, FallbackModelId };
 
         foreach (var model in modelsToTry)
         {
@@ -44,7 +54,11 @@ public class GeminiClient : IGeminiClient
         return "El análisis no está disponible en este momento. Por favor intentá más tarde.";
     }
 
-    private async Task<string?> TryWithRetriesAsync(string model, string prompt, CancellationToken cancellationToken)
+    private async Task<string?> TryWithRetriesAsync(
+        string model,
+        string prompt,
+        CancellationToken cancellationToken
+    )
     {
         var url = $"{BaseUrl}/{model}:generateContent?key={this.apiKey}";
         var requestBody = BuildRequestBody(prompt);
@@ -53,10 +67,17 @@ public class GeminiClient : IGeminiClient
         {
             try
             {
-                var response = await this.httpClient.PostAsJsonAsync(url, requestBody, cancellationToken);
+                var response = await this.httpClient.PostAsJsonAsync(
+                    url,
+                    requestBody,
+                    cancellationToken
+                );
                 var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
 
-                if (response.StatusCode == HttpStatusCode.ServiceUnavailable || response.StatusCode == HttpStatusCode.TooManyRequests)
+                if (
+                    response.StatusCode == HttpStatusCode.ServiceUnavailable
+                    || response.StatusCode == HttpStatusCode.TooManyRequests
+                )
                 {
                     if (attempt < 3)
                     {
@@ -71,14 +92,22 @@ public class GeminiClient : IGeminiClient
                 {
                     this.logger.LogError(
                         "Gemini API error. Status: {Status}, Model: {Model}, Body: {Body}",
-                        response.StatusCode, model, responseBody[..Math.Min(300, responseBody.Length)]);
+                        response.StatusCode,
+                        model,
+                        responseBody[..Math.Min(300, responseBody.Length)]
+                    );
                     return null;
                 }
 
-                var result = JsonSerializer.Deserialize<GeminiResponse>(responseBody,
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                var result = JsonSerializer.Deserialize<GeminiResponse>(
+                    responseBody,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                );
 
-                var text = result?.Candidates?.FirstOrDefault()?.Content?.Parts?.FirstOrDefault()?.Text;
+                var text = result
+                    ?.Candidates?.FirstOrDefault()
+                    ?.Content?.Parts?.FirstOrDefault()
+                    ?.Text;
 
                 if (string.IsNullOrWhiteSpace(text))
                     return null;
@@ -87,8 +116,14 @@ public class GeminiClient : IGeminiClient
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex, "Exception calling Gemini. Model: {Model}, Attempt: {Attempt}", model, attempt);
-                if (attempt == 3) return null;
+                this.logger.LogError(
+                    ex,
+                    "Exception calling Gemini. Model: {Model}, Attempt: {Attempt}",
+                    model,
+                    attempt
+                );
+                if (attempt == 3)
+                    return null;
                 await Task.Delay(TimeSpan.FromSeconds(attempt * 2), cancellationToken);
             }
         }
@@ -96,18 +131,12 @@ public class GeminiClient : IGeminiClient
         return null;
     }
 
-    private static object BuildRequestBody(string prompt) => new
-    {
-        contents = new[]
+    private static object BuildRequestBody(string prompt) =>
+        new
         {
-            new { parts = new[] { new { text = prompt } } }
-        },
-        generationConfig = new
-        {
-            temperature = 0.7,
-            maxOutputTokens = 65536
-        }
-    };
+            contents = new[] { new { parts = new[] { new { text = prompt } } } },
+            generationConfig = new { temperature = 0.7, maxOutputTokens = 65536 },
+        };
 
     private record GeminiResponse
     {

@@ -9,13 +9,13 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return store.select(selectToken).pipe(
     take(1),
-    switchMap(token => {
+    switchMap((token) => {
       if (token) {
         req = req.clone({
-          setHeaders: { Authorization: `Bearer ${token}` }
+          setHeaders: { Authorization: `Bearer ${token}` },
         });
       }
       return next(req);
-    })
+    }),
   );
 };

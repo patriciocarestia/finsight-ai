@@ -10,6 +10,6 @@ export const authGuard = () => {
 
   return store.select(selectIsAuthenticated).pipe(
     take(1),
-    map(isAuthenticated => isAuthenticated || router.createUrlTree(['/auth/login']))
+    map((isAuthenticated) => isAuthenticated || router.createUrlTree(['/auth/login'])),
   );
 };

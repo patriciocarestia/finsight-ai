@@ -14,7 +14,7 @@ export class RatesService {
 
   getHistory(type: string, days: number) {
     return this.http.get<ExchangeRate[]>(`${this.baseUrl}/history`, {
-      params: { type, days: days.toString() }
+      params: { type, days: days.toString() },
     });
   }
 }

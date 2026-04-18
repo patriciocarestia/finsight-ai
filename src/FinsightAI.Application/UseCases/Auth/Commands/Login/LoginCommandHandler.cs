@@ -17,9 +17,13 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponse>
         this.jwtService = jwtService;
     }
 
-    public async Task<AuthResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
+    public async Task<AuthResponse> Handle(
+        LoginCommand request,
+        CancellationToken cancellationToken
+    )
     {
-        var user = await this.userRepository.GetByEmailAsync(request.Email, cancellationToken)
+        var user =
+            await this.userRepository.GetByEmailAsync(request.Email, cancellationToken)
             ?? throw new UnauthorizedAccessException("Invalid email or password.");
 
         if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
@@ -31,7 +35,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponse>
         {
             Token = token,
             Email = user.Email,
-            ExpiresAt = DateTime.UtcNow.AddDays(7)
+            ExpiresAt = DateTime.UtcNow.AddDays(7),
         };
     }
 }

@@ -15,15 +15,21 @@ export class AnalysisEffects {
       ofType(AnalysisActions.analyzePortfolio),
       switchMap(() =>
         this.analysisService.analyze().pipe(
-          map(response => AnalysisActions.analyzePortfolioSuccess({
-            analysis: response.analysis,
-            generatedAt: response.generatedAt
-          })),
-          catchError(err => of(AnalysisActions.analyzePortfolioFailure({
-            error: err.error?.error ?? 'Analysis failed. Please try again.'
-          })))
-        )
-      )
-    )
+          map((response) =>
+            AnalysisActions.analyzePortfolioSuccess({
+              analysis: response.analysis,
+              generatedAt: response.generatedAt,
+            }),
+          ),
+          catchError((err) =>
+            of(
+              AnalysisActions.analyzePortfolioFailure({
+                error: err.error?.error ?? 'Analysis failed. Please try again.',
+              }),
+            ),
+          ),
+        ),
+      ),
+    ),
   );
 }

@@ -1,9 +1,7 @@
 <div class="card">
   <div class="flex items-center gap-3 mb-6">
     <div class="icon-box w-8 h-8 rounded-lg text-blue-400 text-sm">+</div>
-    <h2 class="font-display font-semibold text-white text-base">
-      Agregar Posición
-    </h2>
+    <h2 class="font-display font-semibold text-white text-base">Agregar Posición</h2>
   </div>
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
@@ -19,23 +17,12 @@
 
       <div>
         <label class="label">Cantidad</label>
-        <input
-          type="number"
-          formControlName="amount"
-          class="input"
-          placeholder="0.00"
-          step="any"
-        />
+        <input type="number" formControlName="amount" class="input" placeholder="0.00" step="any" />
       </div>
 
       <div>
         <label class="label">Precio de compra (ARS)</label>
-        <input
-          type="number"
-          formControlName="purchasePrice"
-          class="input"
-          placeholder="0"
-        />
+        <input type="number" formControlName="purchasePrice" class="input" placeholder="0" />
       </div>
 
       <div>
@@ -46,12 +33,7 @@
       @if (form.get("assetType")?.value === "PLAZO_FIJO") {
         <div>
           <label class="label">Tasa anual (%)</label>
-          <input
-            type="number"
-            formControlName="interestRate"
-            class="input"
-            placeholder="140.00"
-          />
+          <input type="number" formControlName="interestRate" class="input" placeholder="140.00" />
         </div>
         <div>
           <label class="label">Fecha de vencimiento</label>
@@ -60,36 +42,20 @@
       }
 
       <div class="md:col-span-2">
-        <label class="label"
-          >Notas
-          <span class="normal-case text-slate-700 tracking-normal"
-            >(opcional)</span
-          ></label
-        >
-        <input
-          type="text"
-          formControlName="notes"
-          class="input"
-          placeholder="Ej: compra en cuotas"
-        />
+        <label class="label">Notas <span class="normal-case text-slate-700 tracking-normal">(opcional)</span></label>
+        <input type="text" formControlName="notes" class="input" placeholder="Ej: compra en cuotas" />
       </div>
     </div>
 
     <div class="flex gap-3 pt-1">
-      <button
-        type="submit"
-        class="btn-primary"
-        [disabled]="form.invalid || (saving$ | async)"
-      >
+      <button type="submit" class="btn-primary" [disabled]="form.invalid || (saving$ | async)">
         @if (saving$ | async) {
           <span class="animate-spin mr-2">↻</span> Guardando...
         } @else {
           Agregar
         }
       </button>
-      <button type="button" class="btn-secondary" (click)="onCancel()">
-        Cancelar
-      </button>
+      <button type="button" class="btn-secondary" (click)="onCancel()">Cancelar</button>
     </div>
   </form>
 </div>

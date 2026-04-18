@@ -14,16 +14,17 @@ public record PositionResponse
     public DateTime? MaturityDate { get; init; }
     public DateTime CreatedAt { get; init; }
 
-    public static PositionResponse FromEntity(Position entity) => new()
-    {
-        Id = entity.Id,
-        AssetType = entity.AssetType,
-        Amount = entity.Amount,
-        PurchasePrice = entity.PurchasePrice,
-        PurchaseDate = entity.PurchaseDate,
-        Notes = entity.Notes,
-        InterestRate = entity.InterestRate,
-        MaturityDate = entity.MaturityDate,
-        CreatedAt = entity.CreatedAt
-    };
+    public static PositionResponse FromEntity(Position entity) =>
+        new()
+        {
+            Id = entity.Id,
+            AssetType = entity.AssetType,
+            Amount = entity.Amount,
+            PurchasePrice = entity.PurchasePrice,
+            PurchaseDate = entity.PurchaseDate,
+            Notes = entity.Notes,
+            InterestRate = entity.InterestRate,
+            MaturityDate = entity.MaturityDate,
+            CreatedAt = entity.CreatedAt,
+        };
 }

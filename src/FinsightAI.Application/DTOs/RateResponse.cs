@@ -11,15 +11,16 @@ public record RateResponse
     public decimal ChangePercent { get; init; }
     public DateTime RecordedAt { get; init; }
 
-    public static RateResponse FromEntity(ExchangeRate entity, decimal changePercent = 0) => new()
-    {
-        Id = entity.Id,
-        Type = entity.Type,
-        Buy = entity.Buy,
-        Sell = entity.Sell,
-        ChangePercent = changePercent,
-        RecordedAt = entity.RecordedAt
-    };
+    public static RateResponse FromEntity(ExchangeRate entity, decimal changePercent = 0) =>
+        new()
+        {
+            Id = entity.Id,
+            Type = entity.Type,
+            Buy = entity.Buy,
+            Sell = entity.Sell,
+            ChangePercent = changePercent,
+            RecordedAt = entity.RecordedAt,
+        };
 }
 
 public record CryptoRateResponse
@@ -31,15 +32,16 @@ public record CryptoRateResponse
     public decimal ChangePercent { get; init; }
     public DateTime RecordedAt { get; init; }
 
-    public static CryptoRateResponse FromEntity(CryptoRate entity, decimal changePercent = 0) => new()
-    {
-        Id = entity.Id,
-        Symbol = entity.Symbol,
-        PriceUsd = entity.PriceUsd,
-        PriceArs = entity.PriceArs,
-        ChangePercent = changePercent,
-        RecordedAt = entity.RecordedAt
-    };
+    public static CryptoRateResponse FromEntity(CryptoRate entity, decimal changePercent = 0) =>
+        new()
+        {
+            Id = entity.Id,
+            Symbol = entity.Symbol,
+            PriceUsd = entity.PriceUsd,
+            PriceArs = entity.PriceArs,
+            ChangePercent = changePercent,
+            RecordedAt = entity.RecordedAt,
+        };
 }
 
 public record LatestRatesResponse

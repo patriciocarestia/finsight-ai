@@ -12,7 +12,8 @@ namespace FinsightAI.API.Controllers;
 /// </summary>
 public class AuthController : BaseController
 {
-    public AuthController(IMediator mediator) : base(mediator) { }
+    public AuthController(IMediator mediator)
+        : base(mediator) { }
 
     /// <summary>
     /// Registers a new user
@@ -22,8 +23,10 @@ public class AuthController : BaseController
     [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<IActionResult> RegisterAsync([FromBody] RegisterCommand command, CancellationToken cancellationToken) =>
-        Created(string.Empty, await this.Mediator.Send(command, cancellationToken));
+    public async Task<IActionResult> RegisterAsync(
+        [FromBody] RegisterCommand command,
+        CancellationToken cancellationToken
+    ) => Created(string.Empty, await this.Mediator.Send(command, cancellationToken));
 
     /// <summary>
     /// Logs in and returns a JWT token
@@ -32,6 +35,8 @@ public class AuthController : BaseController
     [Produces("application/json", Type = typeof(AuthResponse))]
     [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> LoginAsync([FromBody] LoginCommand command, CancellationToken cancellationToken) =>
-        Ok(await this.Mediator.Send(command, cancellationToken));
+    public async Task<IActionResult> LoginAsync(
+        [FromBody] LoginCommand command,
+        CancellationToken cancellationToken
+    ) => Ok(await this.Mediator.Send(command, cancellationToken));
 }

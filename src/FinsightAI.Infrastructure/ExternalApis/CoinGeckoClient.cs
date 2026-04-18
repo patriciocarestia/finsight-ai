@@ -10,7 +10,7 @@ public class CoinGeckoClient
 
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
-        PropertyNameCaseInsensitive = true
+        PropertyNameCaseInsensitive = true,
     };
 
     public CoinGeckoClient(HttpClient httpClient)
@@ -19,41 +19,51 @@ public class CoinGeckoClient
         this.httpClient = httpClient;
     }
 
-    public async Task<IEnumerable<CryptoRate>> FetchRatesAsync(decimal blueRate, CancellationToken cancellationToken)
+    public async Task<IEnumerable<CryptoRate>> FetchRatesAsync(
+        decimal blueRate,
+        CancellationToken cancellationToken
+    )
     {
         try
         {
-            var url = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true";
+            var url =
+                "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true";
             var response = await this.httpClient.GetAsync(url, cancellationToken);
             response.EnsureSuccessStatusCode();
 
             var json = await response.Content.ReadAsStringAsync(cancellationToken);
-            var data = JsonSerializer.Deserialize<Dictionary<string, CoinPriceDto>>(json, JsonOptions) ?? [];
+            var data =
+                JsonSerializer.Deserialize<Dictionary<string, CoinPriceDto>>(json, JsonOptions)
+                ?? [];
 
             var rates = new List<CryptoRate>();
 
             if (data.TryGetValue("bitcoin", out var btc))
             {
-                rates.Add(new CryptoRate
-                {
-                    Symbol = "BTC",
-                    PriceUsd = btc.Usd,
-                    PriceArs = btc.Usd * blueRate,
-                    ChangePercent24h = btc.UsdChange24h,
-                    RecordedAt = DateTime.UtcNow
-                });
+                rates.Add(
+                    new CryptoRate
+                    {
+                        Symbol = "BTC",
+                        PriceUsd = btc.Usd,
+                        PriceArs = btc.Usd * blueRate,
+                        ChangePercent24h = btc.UsdChange24h,
+                        RecordedAt = DateTime.UtcNow,
+                    }
+                );
             }
 
             if (data.TryGetValue("ethereum", out var eth))
             {
-                rates.Add(new CryptoRate
-                {
-                    Symbol = "ETH",
-                    PriceUsd = eth.Usd,
-                    PriceArs = eth.Usd * blueRate,
-                    ChangePercent24h = eth.UsdChange24h,
-                    RecordedAt = DateTime.UtcNow
-                });
+                rates.Add(
+                    new CryptoRate
+                    {
+                        Symbol = "ETH",
+                        PriceUsd = eth.Usd,
+                        PriceArs = eth.Usd * blueRate,
+                        ChangePercent24h = eth.UsdChange24h,
+                        RecordedAt = DateTime.UtcNow,
+                    }
+                );
             }
 
             return rates;
@@ -64,11 +74,17 @@ public class CoinGeckoClient
         }
     }
 
-    public async Task<IEnumerable<CryptoRate>> FetchMarketChartAsync(string coinId, string symbol, IReadOnlyDictionary<DateTime, decimal> blueRateByDate, CancellationToken cancellationToken)
+    public async Task<IEnumerable<CryptoRate>> FetchMarketChartAsync(
+        string coinId,
+        string symbol,
+        IReadOnlyDictionary<DateTime, decimal> blueRateByDate,
+        CancellationToken cancellationToken
+    )
     {
         try
         {
-            var url = $"https://api.coingecko.com/api/v3/coins/{coinId}/market_chart?vs_currency=usd&days=90";
+            var url =
+                $"https://api.coingecko.com/api/v3/coins/{coinId}/market_chart?vs_currency=usd&days=90";
             var response = await this.httpClient.GetAsync(url, cancellationToken);
 
             if (!response.IsSuccessStatusCode)
@@ -86,7 +102,8 @@ public class CoinGeckoClient
             {
                 var date = DateTimeOffset.FromUnixTimeMilliseconds((long)p[0]).UtcDateTime;
                 blueRateByDate.TryGetValue(date.Date, out var rate);
-                if (rate == 0) rate = fallbackBlue;
+                if (rate == 0)
+                    rate = fallbackBlue;
 
                 return new CryptoRate
                 {
@@ -94,7 +111,7 @@ public class CoinGeckoClient
                     PriceUsd = Math.Round(p[1], 2),
                     PriceArs = Math.Round(p[1] * rate, 2),
                     ChangePercent24h = 0,
-                    RecordedAt = date
+                    RecordedAt = date,
                 };
             });
         }

@@ -27,9 +27,7 @@
         <div class="icon-box w-8 h-8 rounded-lg text-blue-400">
           <span class="animate-spin text-sm">↻</span>
         </div>
-        <p class="text-slate-400 text-sm">
-          Gemini está analizando tu portfolio...
-        </p>
+        <p class="text-slate-400 text-sm">Gemini está analizando tu portfolio...</p>
       </div>
       <div class="space-y-2.5 animate-pulse">
         @for (i of [1, 2, 3, 4, 5]; track i) {
@@ -44,14 +42,10 @@
       <div class="flex items-center justify-between mb-6 pb-4 table-divider">
         <div class="flex items-center gap-3">
           <div class="icon-box w-8 h-8 rounded-lg text-blue-400">✦</div>
-          <p class="font-display font-semibold text-white text-sm">
-            Análisis del portfolio
-          </p>
+          <p class="font-display font-semibold text-white text-sm">Análisis del portfolio</p>
         </div>
         @if (generatedAt$ | async; as generatedAt) {
-          <span class="text-[11px] text-slate-600">{{
-            generatedAt | date: "dd/MM/yyyy HH:mm"
-          }}</span>
+          <span class="text-[11px] text-slate-600">{{ generatedAt | date: "dd/MM/yyyy HH:mm" }}</span>
         }
       </div>
       <markdown class="markdown-analysis" [data]="analysis" />
@@ -59,18 +53,11 @@
   }
 
   @if (!(analysis$ | async) && !(loading$ | async)) {
-    <div
-      class="card flex flex-col items-center justify-center py-20 text-center"
-    >
-      <div class="icon-box w-14 h-14 rounded-2xl text-blue-400 text-2xl mb-5">
-        ✦
-      </div>
-      <h2 class="font-display font-semibold text-white text-lg mb-2">
-        Tu analista financiero IA
-      </h2>
+    <div class="card flex flex-col items-center justify-center py-20 text-center">
+      <div class="icon-box w-14 h-14 rounded-2xl text-blue-400 text-2xl mb-5">✦</div>
+      <h2 class="font-display font-semibold text-white text-lg mb-2">Tu analista financiero IA</h2>
       <p class="page-subtitle max-w-sm leading-relaxed">
-        Obtené un análisis personalizado de tus inversiones, comparado contra la
-        inflación y el dólar blue.
+        Obtené un análisis personalizado de tus inversiones, comparado contra la inflación y el dólar blue.
       </p>
     </div>
   }

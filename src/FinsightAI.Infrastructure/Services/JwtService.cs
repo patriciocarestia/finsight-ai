@@ -20,8 +20,12 @@ public class JwtService : IJwtService
 
     public string GenerateToken(User user)
     {
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-            this.configuration["Jwt:Key"] ?? throw new InvalidOperationException("Jwt:Key not configured.")));
+        var key = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(
+                this.configuration["Jwt:Key"]
+                    ?? throw new InvalidOperationException("Jwt:Key not configured.")
+            )
+        );
 
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
@@ -29,7 +33,7 @@ public class JwtService : IJwtService
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Email, user.Email),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         };
 
         var token = new JwtSecurityToken(
@@ -37,7 +41,8 @@ public class JwtService : IJwtService
             audience: this.configuration["Jwt:Audience"],
             claims: claims,
             expires: DateTime.UtcNow.AddDays(7),
-            signingCredentials: credentials);
+            signingCredentials: credentials
+        );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }

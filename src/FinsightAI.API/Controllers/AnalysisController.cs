@@ -13,7 +13,8 @@ namespace FinsightAI.API.Controllers;
 [Authorize]
 public class AnalysisController : BaseController
 {
-    public AnalysisController(IMediator mediator) : base(mediator) { }
+    public AnalysisController(IMediator mediator)
+        : base(mediator) { }
 
     /// <summary>
     /// Analyzes the user's portfolio using Gemini AI
@@ -22,5 +23,10 @@ public class AnalysisController : BaseController
     [Produces("application/json", Type = typeof(AnalysisResponse))]
     [ProducesResponseType(typeof(AnalysisResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> AnalyzeAsync(CancellationToken cancellationToken) =>
-        Ok(await this.Mediator.Send(new AnalyzePortfolioCommand { UserId = this.CurrentUserId }, cancellationToken));
+        Ok(
+            await this.Mediator.Send(
+                new AnalyzePortfolioCommand { UserId = this.CurrentUserId },
+                cancellationToken
+            )
+        );
 }

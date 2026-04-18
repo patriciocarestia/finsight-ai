@@ -65,6 +65,6 @@ export const authFeature = createFeature({
       error,
     })),
 
-    on(logout, () => ({ ...initialState }))
+    on(logout, () => ({ ...initialState })),
   ),
 });

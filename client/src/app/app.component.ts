@@ -5,6 +5,6 @@ import { NavbarComponent } from './shared/components/navbar/navbar.component';
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, NavbarComponent],
-  templateUrl: './app.component.html'
+  templateUrl: './app.component.html',
 })
 export class AppComponent {}

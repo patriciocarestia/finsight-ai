@@ -16,6 +16,5 @@ public abstract class BaseController : ControllerBase
         this.Mediator = mediator;
     }
 
-    protected int CurrentUserId =>
-        int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+    protected int CurrentUserId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
 }

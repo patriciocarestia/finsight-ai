@@ -15,7 +15,10 @@ public class AddPositionCommandHandler : IRequestHandler<AddPositionCommand, Pos
         this.positionRepository = positionRepository;
     }
 
-    public async Task<PositionResponse> Handle(AddPositionCommand request, CancellationToken cancellationToken)
+    public async Task<PositionResponse> Handle(
+        AddPositionCommand request,
+        CancellationToken cancellationToken
+    )
     {
         var position = new Position
         {
@@ -26,7 +29,7 @@ public class AddPositionCommandHandler : IRequestHandler<AddPositionCommand, Pos
             PurchaseDate = request.PurchaseDate,
             Notes = request.Notes,
             InterestRate = request.InterestRate,
-            MaturityDate = request.MaturityDate
+            MaturityDate = request.MaturityDate,
         };
 
         var created = await this.positionRepository.AddAsync(position, cancellationToken);

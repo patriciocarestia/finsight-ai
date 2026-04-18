@@ -5,7 +5,8 @@ using MediatR;
 
 namespace FinsightAI.Application.UseCases.Analysis.Commands.AnalyzePortfolio;
 
-public class AnalyzePortfolioCommandHandler : IRequestHandler<AnalyzePortfolioCommand, AnalysisResponse>
+public class AnalyzePortfolioCommandHandler
+    : IRequestHandler<AnalyzePortfolioCommand, AnalysisResponse>
 {
     private readonly IPositionRepository positionRepository;
     private readonly IRateRepository rateRepository;
@@ -14,7 +15,8 @@ public class AnalyzePortfolioCommandHandler : IRequestHandler<AnalyzePortfolioCo
     public AnalyzePortfolioCommandHandler(
         IPositionRepository positionRepository,
         IRateRepository rateRepository,
-        IGeminiClient geminiClient)
+        IGeminiClient geminiClient
+    )
     {
         ArgumentNullException.ThrowIfNull(positionRepository, nameof(positionRepository));
         ArgumentNullException.ThrowIfNull(rateRepository, nameof(rateRepository));
@@ -24,36 +26,48 @@ public class AnalyzePortfolioCommandHandler : IRequestHandler<AnalyzePortfolioCo
         this.geminiClient = geminiClient;
     }
 
-    public async Task<AnalysisResponse> Handle(AnalyzePortfolioCommand request, CancellationToken cancellationToken)
+    public async Task<AnalysisResponse> Handle(
+        AnalyzePortfolioCommand request,
+        CancellationToken cancellationToken
+    )
     {
-        var positions = await this.positionRepository.GetByUserIdAsync(request.UserId, cancellationToken);
+        var positions = await this.positionRepository.GetByUserIdAsync(
+            request.UserId,
+            cancellationToken
+        );
         var exchangeRates = await this.rateRepository.GetLatestRatesAsync(cancellationToken);
         var cryptoRates = await this.rateRepository.GetLatestCryptoRatesAsync(cancellationToken);
 
-        var portfolioJson = JsonSerializer.Serialize(positions.Select(p => new
-        {
-            p.AssetType,
-            p.Amount,
-            p.PurchasePrice,
-            p.PurchaseDate,
-            p.InterestRate,
-            p.MaturityDate
-        }));
+        var portfolioJson = JsonSerializer.Serialize(
+            positions.Select(p => new
+            {
+                p.AssetType,
+                p.Amount,
+                p.PurchasePrice,
+                p.PurchaseDate,
+                p.InterestRate,
+                p.MaturityDate,
+            })
+        );
 
-        var ratesJson = JsonSerializer.Serialize(exchangeRates.Select(r => new
-        {
-            r.Type,
-            r.Buy,
-            r.Sell
-        }));
+        var ratesJson = JsonSerializer.Serialize(
+            exchangeRates.Select(r => new
+            {
+                r.Type,
+                r.Buy,
+                r.Sell,
+            })
+        );
 
-        var cryptoJson = JsonSerializer.Serialize(cryptoRates.Select(c => new
-        {
-            c.Symbol,
-            c.PriceUsd,
-            c.PriceArs,
-            c.ChangePercent24h
-        }));
+        var cryptoJson = JsonSerializer.Serialize(
+            cryptoRates.Select(c => new
+            {
+                c.Symbol,
+                c.PriceUsd,
+                c.PriceArs,
+                c.ChangePercent24h,
+            })
+        );
 
         var prompt = $"""
             Sos un asesor financiero argentino. La fecha actual es abril 2026. Todas las fechas del portfolio son correctas, estamos en 2026. Tu trabajo es analizar el portfolio del usuario y darle feedback útil.
@@ -93,10 +107,6 @@ public class AnalyzePortfolioCommandHandler : IRequestHandler<AnalyzePortfolioCo
 
         var analysis = await this.geminiClient.GenerateContentAsync(prompt, cancellationToken);
 
-        return new AnalysisResponse
-        {
-            Analysis = analysis,
-            GeneratedAt = DateTime.UtcNow
-        };
+        return new AnalysisResponse { Analysis = analysis, GeneratedAt = DateTime.UtcNow };
     }
 }

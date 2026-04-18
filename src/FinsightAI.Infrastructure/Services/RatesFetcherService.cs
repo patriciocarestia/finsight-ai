@@ -12,7 +12,8 @@ public class RatesFetcherService
     public RatesFetcherService(
         DolarApiClient dolarApiClient,
         CoinGeckoClient coinGeckoClient,
-        IRateRepository rateRepository)
+        IRateRepository rateRepository
+    )
     {
         ArgumentNullException.ThrowIfNull(dolarApiClient, nameof(dolarApiClient));
         ArgumentNullException.ThrowIfNull(coinGeckoClient, nameof(coinGeckoClient));
@@ -32,7 +33,9 @@ public class RatesFetcherService
             await this.rateRepository.AddExchangeRatesAsync(exchangeRates, cts.Token);
 
         var blueRate = exchangeRates.FirstOrDefault(r => r.Type == "blue")?.Sell ?? 1000m;
-        var cryptoRates = (await this.coinGeckoClient.FetchRatesAsync(blueRate, cts.Token)).ToList();
+        var cryptoRates = (
+            await this.coinGeckoClient.FetchRatesAsync(blueRate, cts.Token)
+        ).ToList();
 
         if (cryptoRates.Count > 0)
             await this.rateRepository.AddCryptoRatesAsync(cryptoRates, cts.Token);

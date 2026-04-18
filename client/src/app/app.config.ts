@@ -27,10 +27,10 @@ export const appConfig: ApplicationConfig = {
       [authFeature.name]: authFeature.reducer,
       [ratesFeature.name]: ratesFeature.reducer,
       [portfolioFeature.name]: portfolioFeature.reducer,
-      [analysisFeature.name]: analysisFeature.reducer
+      [analysisFeature.name]: analysisFeature.reducer,
     }),
     provideEffects([AuthEffects, RatesEffects, PortfolioEffects, AnalysisEffects]),
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
-    provideMarkdown()
-  ]
+    provideMarkdown(),
+  ],
 };

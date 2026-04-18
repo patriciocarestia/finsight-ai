@@ -12,10 +12,14 @@ namespace FinsightAI.Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddInfrastructure(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
     {
         services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlite(configuration.GetConnectionString("DefaultConnection")));
+            options.UseSqlite(configuration.GetConnectionString("DefaultConnection"))
+        );
 
         services.AddScoped<IPositionRepository, PositionRepository>();
         services.AddScoped<IRateRepository, RateRepository>();
@@ -26,7 +30,8 @@ public static class DependencyInjection
 
         services.AddHttpClient<DolarApiClient>();
         services.AddHttpClient<CoinGeckoClient>(client =>
-            client.DefaultRequestHeaders.Add("User-Agent", "FinsightAI/1.0 (portfolio tracker)"));
+            client.DefaultRequestHeaders.Add("User-Agent", "FinsightAI/1.0 (portfolio tracker)")
+        );
         services.AddHttpClient<IGeminiClient, GeminiClient>();
 
         return services;

@@ -86,6 +86,6 @@ export const portfolioFeature = createFeature({
       ...state,
       saving: false,
       error,
-    }))
+    })),
   ),
 });

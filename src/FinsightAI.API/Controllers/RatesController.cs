@@ -12,7 +12,8 @@ namespace FinsightAI.API.Controllers;
 /// </summary>
 public class RatesController : BaseController
 {
-    public RatesController(IMediator mediator) : base(mediator) { }
+    public RatesController(IMediator mediator)
+        : base(mediator) { }
 
     /// <summary>
     /// Gets the latest exchange rates and crypto prices
@@ -32,6 +33,12 @@ public class RatesController : BaseController
     public async Task<IActionResult> GetHistoryAsync(
         [FromQuery] string type = "blue",
         [FromQuery] int days = 30,
-        CancellationToken cancellationToken = default) =>
-        Ok(await this.Mediator.Send(new GetRateHistoryQuery { Type = type, Days = days }, cancellationToken));
+        CancellationToken cancellationToken = default
+    ) =>
+        Ok(
+            await this.Mediator.Send(
+                new GetRateHistoryQuery { Type = type, Days = days },
+                cancellationToken
+            )
+        );
 }

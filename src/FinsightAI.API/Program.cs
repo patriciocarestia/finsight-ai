@@ -21,32 +21,45 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "FinSight AI API",
-        Version = "v1",
-        Description = "Real-time Argentine exchange rates, crypto tracker, and AI-powered portfolio analysis"
-    });
-
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Name = "Authorization",
-        Type = SecuritySchemeType.Http,
-        Scheme = "bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header
-    });
-
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
+    c.SwaggerDoc(
+        "v1",
+        new OpenApiInfo
         {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
-            },
-            []
+            Title = "FinSight AI API",
+            Version = "v1",
+            Description =
+                "Real-time Argentine exchange rates, crypto tracker, and AI-powered portfolio analysis",
         }
-    });
+    );
+
+    c.AddSecurityDefinition(
+        "Bearer",
+        new OpenApiSecurityScheme
+        {
+            Name = "Authorization",
+            Type = SecuritySchemeType.Http,
+            Scheme = "bearer",
+            BearerFormat = "JWT",
+            In = ParameterLocation.Header,
+        }
+    );
+
+    c.AddSecurityRequirement(
+        new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer",
+                    },
+                },
+                []
+            },
+        }
+    );
 
     var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
@@ -54,7 +67,8 @@ builder.Services.AddSwaggerGen(c =>
         c.IncludeXmlComments(xmlPath);
 });
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder
+    .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
@@ -66,7 +80,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
+            ),
         };
     });
 
@@ -74,25 +89,25 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAngular", policy =>
-    {
-        var origins = builder.Configuration["AllowedOrigins"]?
-            .Split(',', StringSplitOptions.RemoveEmptyEntries)
-            ?? new[] { "http://localhost:4200" };
+    options.AddPolicy(
+        "AllowAngular",
+        policy =>
+        {
+            var origins =
+                builder
+                    .Configuration["AllowedOrigins"]
+                    ?.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                ?? new[] { "http://localhost:4200" };
 
-        policy
-            .WithOrigins(origins)
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
-    });
+            policy.WithOrigins(origins).AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+        }
+    );
 });
 
-var hangfireConnectionString = builder.Configuration.GetConnectionString("HangfireConnection")
-    ?? "Data Source=hangfire.db";
+var hangfireConnectionString =
+    builder.Configuration.GetConnectionString("HangfireConnection") ?? "Data Source=hangfire.db";
 
-builder.Services.AddHangfire(config =>
-    config.UseSQLiteStorage(hangfireConnectionString));
+builder.Services.AddHangfire(config => config.UseSQLiteStorage(hangfireConnectionString));
 
 builder.Services.AddHangfireServer();
 
@@ -126,6 +141,7 @@ app.UseHangfireDashboard("/hangfire");
 RecurringJob.AddOrUpdate<RatesFetcherService>(
     "fetch-rates",
     service => service.FetchAndStoreAllRatesAsync(),
-    "*/15 * * * *");
+    "*/15 * * * *"
+);
 
 app.Run();

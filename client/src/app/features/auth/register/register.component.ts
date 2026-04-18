@@ -4,14 +4,18 @@ import { Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { AsyncPipe } from '@angular/common';
 import { register } from '../../../store/auth/auth.actions';
-import { selectAuthLoading, selectAuthError, selectIsAuthenticated } from '../../../store/auth/auth.selectors';
+import {
+  selectAuthLoading,
+  selectAuthError,
+  selectIsAuthenticated,
+} from '../../../store/auth/auth.selectors';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-register',
   imports: [ReactiveFormsModule, RouterLink, AsyncPipe],
-  templateUrl: './register.component.html'
+  templateUrl: './register.component.html',
 })
 export class RegisterComponent {
   private readonly store = inject(Store);
@@ -23,14 +27,14 @@ export class RegisterComponent {
 
   readonly form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]]
+    password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
   constructor() {
-    this.store.select(selectIsAuthenticated).pipe(
-      filter(Boolean),
-      takeUntilDestroyed()
-    ).subscribe(() => this.router.navigate(['/portfolio']));
+    this.store
+      .select(selectIsAuthenticated)
+      .pipe(filter(Boolean), takeUntilDestroyed())
+      .subscribe(() => this.router.navigate(['/portfolio']));
   }
 
   onSubmit() {

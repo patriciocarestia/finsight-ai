@@ -22,7 +22,8 @@ public class HistoricalDataSeeder
     public HistoricalDataSeeder(
         AppDbContext context,
         DolarApiClient dolarApiClient,
-        CoinGeckoClient coinGeckoClient)
+        CoinGeckoClient coinGeckoClient
+    )
     {
         ArgumentNullException.ThrowIfNull(context, nameof(context));
         ArgumentNullException.ThrowIfNull(dolarApiClient, nameof(dolarApiClient));
@@ -35,8 +36,10 @@ public class HistoricalDataSeeder
     public async Task SeedAsync(CancellationToken cancellationToken = default)
     {
         var yesterday = DateTime.UtcNow.AddDays(-1);
-        var hasHistoricalData = await this.context.ExchangeRates
-            .AnyAsync(r => r.RecordedAt < yesterday, cancellationToken);
+        var hasHistoricalData = await this.context.ExchangeRates.AnyAsync(
+            r => r.RecordedAt < yesterday,
+            cancellationToken
+        );
         if (hasHistoricalData)
             return;
 
@@ -47,7 +50,9 @@ public class HistoricalDataSeeder
 
         foreach (var (apiPath, dbType) in DollarTypes)
         {
-            var rates = (await this.dolarApiClient.FetchHistoricalRatesAsync(apiPath, dbType, 90, cts.Token)).ToList();
+            var rates = (
+                await this.dolarApiClient.FetchHistoricalRatesAsync(apiPath, dbType, 90, cts.Token)
+            ).ToList();
             exchangeRates.AddRange(rates);
         }
 
@@ -62,11 +67,25 @@ public class HistoricalDataSeeder
             .GroupBy(r => r.RecordedAt.Date)
             .ToDictionary(g => g.Key, g => g.First().Sell);
 
-        var btcHistory = (await this.coinGeckoClient.FetchMarketChartAsync("bitcoin", "BTC", blueRateByDate, cts.Token)).ToList();
+        var btcHistory = (
+            await this.coinGeckoClient.FetchMarketChartAsync(
+                "bitcoin",
+                "BTC",
+                blueRateByDate,
+                cts.Token
+            )
+        ).ToList();
 
         await Task.Delay(TimeSpan.FromSeconds(3), cts.Token);
 
-        var ethHistory = (await this.coinGeckoClient.FetchMarketChartAsync("ethereum", "ETH", blueRateByDate, cts.Token)).ToList();
+        var ethHistory = (
+            await this.coinGeckoClient.FetchMarketChartAsync(
+                "ethereum",
+                "ETH",
+                blueRateByDate,
+                cts.Token
+            )
+        ).ToList();
 
         var cryptoRates = btcHistory.Concat(ethHistory).ToList();
 
@@ -80,7 +99,9 @@ public class HistoricalDataSeeder
         }
     }
 
-    private static List<Domain.Entities.CryptoRate> GenerateSimulatedCrypto(IReadOnlyDictionary<DateTime, decimal> blueRateByDate)
+    private static List<Domain.Entities.CryptoRate> GenerateSimulatedCrypto(
+        IReadOnlyDictionary<DateTime, decimal> blueRateByDate
+    )
     {
         var random = new Random(99);
         var rates = new List<Domain.Entities.CryptoRate>();
@@ -98,8 +119,26 @@ public class HistoricalDataSeeder
             var arsRate = blueRate > 0 ? blueRate : fallback;
             var ts = DateTime.SpecifyKind(date.AddHours(12), DateTimeKind.Utc);
 
-            rates.Add(new Domain.Entities.CryptoRate { Symbol = "BTC", PriceUsd = Math.Round(btcUsd, 2), PriceArs = Math.Round(btcUsd * arsRate, 2), ChangePercent24h = 0, RecordedAt = ts });
-            rates.Add(new Domain.Entities.CryptoRate { Symbol = "ETH", PriceUsd = Math.Round(ethUsd, 2), PriceArs = Math.Round(ethUsd * arsRate, 2), ChangePercent24h = 0, RecordedAt = ts });
+            rates.Add(
+                new Domain.Entities.CryptoRate
+                {
+                    Symbol = "BTC",
+                    PriceUsd = Math.Round(btcUsd, 2),
+                    PriceArs = Math.Round(btcUsd * arsRate, 2),
+                    ChangePercent24h = 0,
+                    RecordedAt = ts,
+                }
+            );
+            rates.Add(
+                new Domain.Entities.CryptoRate
+                {
+                    Symbol = "ETH",
+                    PriceUsd = Math.Round(ethUsd, 2),
+                    PriceArs = Math.Round(ethUsd * arsRate, 2),
+                    ChangePercent24h = 0,
+                    RecordedAt = ts,
+                }
+            );
         }
 
         return rates;

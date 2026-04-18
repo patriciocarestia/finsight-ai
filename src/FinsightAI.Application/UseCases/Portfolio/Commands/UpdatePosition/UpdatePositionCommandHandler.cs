@@ -14,9 +14,13 @@ public class UpdatePositionCommandHandler : IRequestHandler<UpdatePositionComman
         this.positionRepository = positionRepository;
     }
 
-    public async Task<PositionResponse> Handle(UpdatePositionCommand request, CancellationToken cancellationToken)
+    public async Task<PositionResponse> Handle(
+        UpdatePositionCommand request,
+        CancellationToken cancellationToken
+    )
     {
-        var position = await this.positionRepository.GetByIdAsync(request.Id, cancellationToken)
+        var position =
+            await this.positionRepository.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new KeyNotFoundException($"Position {request.Id} not found.");
 
         if (position.UserId != request.UserId)

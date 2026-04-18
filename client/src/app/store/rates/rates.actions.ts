@@ -5,25 +5,25 @@ export const loadRates = createAction('[Rates] Load Rates');
 
 export const loadRatesSuccess = createAction(
   '[Rates] Load Rates Success',
-  props<{ exchangeRates: ExchangeRate[]; cryptoRates: CryptoRate[] }>()
+  props<{ exchangeRates: ExchangeRate[]; cryptoRates: CryptoRate[] }>(),
 );
 
 export const loadRatesFailure = createAction(
   '[Rates] Load Rates Failure',
-  props<{ error: string }>()
+  props<{ error: string }>(),
 );
 
 export const loadHistory = createAction(
   '[Rates] Load History',
-  props<{ rateType: string; days: number }>()
+  props<{ rateType: string; days: number }>(),
 );
 
 export const loadHistorySuccess = createAction(
   '[Rates] Load History Success',
-  props<{ history: ExchangeRate[] }>()
+  props<{ history: ExchangeRate[] }>(),
 );
 
 export const loadHistoryFailure = createAction(
   '[Rates] Load History Failure',
-  props<{ error: string }>()
+  props<{ error: string }>(),
 );

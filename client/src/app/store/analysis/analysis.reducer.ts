@@ -42,6 +42,6 @@ export const analysisFeature = createFeature({
       ...state,
       loading: false,
       error,
-    }))
+    })),
   ),
 });

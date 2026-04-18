@@ -15,13 +15,17 @@ export class PortfolioEffects {
       ofType(PortfolioActions.loadPositions),
       switchMap(() =>
         this.portfolioService.getPositions().pipe(
-          map(positions => PortfolioActions.loadPositionsSuccess({ positions })),
-          catchError(err => of(PortfolioActions.loadPositionsFailure({
-            error: err.error?.error ?? 'Failed to load positions.'
-          })))
-        )
-      )
-    )
+          map((positions) => PortfolioActions.loadPositionsSuccess({ positions })),
+          catchError((err) =>
+            of(
+              PortfolioActions.loadPositionsFailure({
+                error: err.error?.error ?? 'Failed to load positions.',
+              }),
+            ),
+          ),
+        ),
+      ),
+    ),
   );
 
   addPosition$ = createEffect(() =>
@@ -29,13 +33,17 @@ export class PortfolioEffects {
       ofType(PortfolioActions.addPosition),
       switchMap(({ position }) =>
         this.portfolioService.addPosition(position).pipe(
-          map(created => PortfolioActions.addPositionSuccess({ position: created })),
-          catchError(err => of(PortfolioActions.addPositionFailure({
-            error: err.error?.error ?? 'Failed to add position.'
-          })))
-        )
-      )
-    )
+          map((created) => PortfolioActions.addPositionSuccess({ position: created })),
+          catchError((err) =>
+            of(
+              PortfolioActions.addPositionFailure({
+                error: err.error?.error ?? 'Failed to add position.',
+              }),
+            ),
+          ),
+        ),
+      ),
+    ),
   );
 
   deletePosition$ = createEffect(() =>
@@ -44,11 +52,15 @@ export class PortfolioEffects {
       switchMap(({ id }) =>
         this.portfolioService.deletePosition(id).pipe(
           map(() => PortfolioActions.deletePositionSuccess({ id })),
-          catchError(err => of(PortfolioActions.deletePositionFailure({
-            error: err.error?.error ?? 'Failed to delete position.'
-          })))
-        )
-      )
-    )
+          catchError((err) =>
+            of(
+              PortfolioActions.deletePositionFailure({
+                error: err.error?.error ?? 'Failed to delete position.',
+              }),
+            ),
+          ),
+        ),
+      ),
+    ),
   );
 }

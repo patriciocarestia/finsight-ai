@@ -10,7 +10,7 @@ public class DolarApiClient
 
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
-        PropertyNameCaseInsensitive = true
+        PropertyNameCaseInsensitive = true,
     };
 
     public DolarApiClient(HttpClient httpClient)
@@ -19,11 +19,16 @@ public class DolarApiClient
         this.httpClient = httpClient;
     }
 
-    public async Task<IEnumerable<ExchangeRate>> FetchAllRatesAsync(CancellationToken cancellationToken)
+    public async Task<IEnumerable<ExchangeRate>> FetchAllRatesAsync(
+        CancellationToken cancellationToken
+    )
     {
         try
         {
-            var response = await this.httpClient.GetAsync("https://dolarapi.com/v1/dolares", cancellationToken);
+            var response = await this.httpClient.GetAsync(
+                "https://dolarapi.com/v1/dolares",
+                cancellationToken
+            );
             response.EnsureSuccessStatusCode();
 
             var json = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -34,7 +39,7 @@ public class DolarApiClient
                 Type = MapType(d.Casa),
                 Buy = d.Compra ?? 0,
                 Sell = d.Venta ?? 0,
-                RecordedAt = DateTime.UtcNow
+                RecordedAt = DateTime.UtcNow,
             });
         }
         catch
@@ -43,17 +48,23 @@ public class DolarApiClient
         }
     }
 
-    private static string MapType(string casa) => casa.ToLowerInvariant() switch
-    {
-        "oficial" => "oficial",
-        "blue" => "blue",
-        "bolsa" => "mep",
-        "contadoconliqui" => "ccl",
-        "cripto" => "cripto",
-        _ => casa.ToLowerInvariant()
-    };
+    private static string MapType(string casa) =>
+        casa.ToLowerInvariant() switch
+        {
+            "oficial" => "oficial",
+            "blue" => "blue",
+            "bolsa" => "mep",
+            "contadoconliqui" => "ccl",
+            "cripto" => "cripto",
+            _ => casa.ToLowerInvariant(),
+        };
 
-    public async Task<IEnumerable<ExchangeRate>> FetchHistoricalRatesAsync(string apiPath, string dbType, int days, CancellationToken cancellationToken)
+    public async Task<IEnumerable<ExchangeRate>> FetchHistoricalRatesAsync(
+        string apiPath,
+        string dbType,
+        int days,
+        CancellationToken cancellationToken
+    )
     {
         try
         {
@@ -62,12 +73,12 @@ public class DolarApiClient
             response.EnsureSuccessStatusCode();
 
             var json = await response.Content.ReadAsStringAsync(cancellationToken);
-            var dtos = JsonSerializer.Deserialize<List<HistoricalDolarDto>>(json, JsonOptions) ?? [];
+            var dtos =
+                JsonSerializer.Deserialize<List<HistoricalDolarDto>>(json, JsonOptions) ?? [];
 
             var since = DateTime.UtcNow.AddDays(-days).Date;
 
-            return dtos
-                .Where(d => DateTime.TryParse(d.Fecha, out var date) && date.Date >= since)
+            return dtos.Where(d => DateTime.TryParse(d.Fecha, out var date) && date.Date >= since)
                 .Select(d =>
                 {
                     var date = DateTime.Parse(d.Fecha).Date;
@@ -76,7 +87,7 @@ public class DolarApiClient
                         Type = dbType,
                         Buy = d.Compra ?? d.Venta ?? 0,
                         Sell = d.Venta ?? d.Compra ?? 0,
-                        RecordedAt = DateTime.SpecifyKind(date.AddHours(12), DateTimeKind.Utc)
+                        RecordedAt = DateTime.SpecifyKind(date.AddHours(12), DateTimeKind.Utc),
                     };
                 });
         }

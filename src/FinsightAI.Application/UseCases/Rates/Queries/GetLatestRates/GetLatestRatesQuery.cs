@@ -3,6 +3,4 @@ using MediatR;
 
 namespace FinsightAI.Application.UseCases.Rates.Queries.GetLatestRates;
 
-public class GetLatestRatesQuery : IRequest<LatestRatesResponse>
-{
-}
+public class GetLatestRatesQuery : IRequest<LatestRatesResponse> { }

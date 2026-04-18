@@ -12,8 +12,7 @@ public class AddPositionCommandHandlerTests
         [Fact]
         public void Should_throw_ArgumentNullException_when_repository_is_null()
         {
-            Assert.Throws<ArgumentNullException>(() =>
-                new AddPositionCommandHandler(null!));
+            Assert.Throws<ArgumentNullException>(() => new AddPositionCommandHandler(null!));
         }
     }
 
@@ -29,18 +28,20 @@ public class AddPositionCommandHandlerTests
                 AssetType = "USD_BLUE",
                 Amount = 500m,
                 PurchasePrice = 1250m,
-                PurchaseDate = new DateTime(2025, 3, 15)
+                PurchaseDate = new DateTime(2025, 3, 15),
             };
 
             var repository = Mock.Of<IPositionRepository>();
             Mock.Get(repository)
                 .Setup(r => r.AddAsync(It.IsAny<Position>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((Position p, CancellationToken _) =>
-                {
-                    p.Id = 42;
-                    p.CreatedAt = DateTime.UtcNow;
-                    return p;
-                });
+                .ReturnsAsync(
+                    (Position p, CancellationToken _) =>
+                    {
+                        p.Id = 42;
+                        p.CreatedAt = DateTime.UtcNow;
+                        return p;
+                    }
+                );
 
             var sut = new AddPositionCommandHandler(repository);
 
@@ -65,7 +66,7 @@ public class AddPositionCommandHandlerTests
                 AssetType = "BTC",
                 Amount = 0.01m,
                 PurchasePrice = 65000m,
-                PurchaseDate = DateTime.UtcNow
+                PurchaseDate = DateTime.UtcNow,
             };
 
             var repository = Mock.Of<IPositionRepository>();
@@ -79,10 +80,15 @@ public class AddPositionCommandHandlerTests
             await sut.Handle(command, CancellationToken.None);
 
             // Assert
-            Mock.Get(repository).Verify(r => r.AddAsync(
-                It.Is<Position>(p => p.UserId == 1 && p.AssetType == "BTC"),
-                It.IsAny<CancellationToken>()),
-                Times.Once);
+            Mock.Get(repository)
+                .Verify(
+                    r =>
+                        r.AddAsync(
+                            It.Is<Position>(p => p.UserId == 1 && p.AssetType == "BTC"),
+                            It.IsAny<CancellationToken>()
+                        ),
+                    Times.Once
+                );
         }
 
         [Fact]
@@ -95,7 +101,7 @@ public class AddPositionCommandHandlerTests
                 AssetType = "USDT",
                 Amount = 1000m,
                 PurchasePrice = 1m,
-                PurchaseDate = DateTime.UtcNow
+                PurchaseDate = DateTime.UtcNow,
             };
 
             Position? savedPosition = null;

@@ -61,9 +61,7 @@ export class PortfolioComponent implements OnInit {
     return ASSET_LABELS[type] ?? type;
   }
 
-  getTotalInvested(
-    positions: { amount: number; purchasePrice: number }[],
-  ): number {
+  getTotalInvested(positions: { amount: number; purchasePrice: number }[]): number {
     return positions.reduce((sum, p) => sum + p.amount * p.purchasePrice, 0);
   }
 

@@ -14,12 +14,19 @@ public class GetLatestRatesQueryHandler : IRequestHandler<GetLatestRatesQuery, L
         this.rateRepository = rateRepository;
     }
 
-    public async Task<LatestRatesResponse> Handle(GetLatestRatesQuery request, CancellationToken cancellationToken)
+    public async Task<LatestRatesResponse> Handle(
+        GetLatestRatesQuery request,
+        CancellationToken cancellationToken
+    )
     {
         var exchangeRates = await this.rateRepository.GetLatestRatesAsync(cancellationToken);
-        var previousExchangeRates = await this.rateRepository.GetPreviousDayRatesAsync(cancellationToken);
+        var previousExchangeRates = await this.rateRepository.GetPreviousDayRatesAsync(
+            cancellationToken
+        );
         var cryptoRates = await this.rateRepository.GetLatestCryptoRatesAsync(cancellationToken);
-        var previousCryptoRates = await this.rateRepository.GetPreviousDayCryptoRatesAsync(cancellationToken);
+        var previousCryptoRates = await this.rateRepository.GetPreviousDayCryptoRatesAsync(
+            cancellationToken
+        );
 
         var prevExchangeByType = previousExchangeRates.ToDictionary(r => r.Type);
         var prevCryptoBySymbol = previousCryptoRates.ToDictionary(r => r.Symbol);
@@ -40,7 +47,7 @@ public class GetLatestRatesQueryHandler : IRequestHandler<GetLatestRatesQuery, L
                     change = Math.Round((r.PriceArs - prev.PriceArs) / prev.PriceArs * 100, 2);
                 return CryptoRateResponse.FromEntity(r, change);
             }),
-            FetchedAt = DateTime.UtcNow
+            FetchedAt = DateTime.UtcNow,
         };
     }
 }

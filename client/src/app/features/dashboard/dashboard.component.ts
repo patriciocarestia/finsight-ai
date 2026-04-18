@@ -130,15 +130,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     return {
       labels: entries.map(([day]) => day),
-      datasets: [{
-        data: entries.map(([, sell]) => sell),
-        borderColor: '#6366f1',
-        backgroundColor: 'rgba(99, 102, 241, 0.07)',
-        fill: true,
-        tension: 0.4,
-        pointRadius: 0,
-        borderWidth: 1.5,
-      }],
+      datasets: [
+        {
+          data: entries.map(([, sell]) => sell),
+          borderColor: '#6366f1',
+          backgroundColor: 'rgba(99, 102, 241, 0.07)',
+          fill: true,
+          tension: 0.4,
+          pointRadius: 0,
+          borderWidth: 1.5,
+        },
+      ],
     };
   }
 

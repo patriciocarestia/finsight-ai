@@ -15,9 +15,12 @@ public class PositionRepository : IPositionRepository
         this.context = context;
     }
 
-    public async Task<IEnumerable<Position>> GetByUserIdAsync(int userId, CancellationToken cancellationToken) =>
-        await this.context.Positions
-            .Where(p => p.UserId == userId)
+    public async Task<IEnumerable<Position>> GetByUserIdAsync(
+        int userId,
+        CancellationToken cancellationToken
+    ) =>
+        await this
+            .context.Positions.Where(p => p.UserId == userId)
             .OrderByDescending(p => p.CreatedAt)
             .ToListAsync(cancellationToken);
 

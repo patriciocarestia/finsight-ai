@@ -65,44 +65,26 @@
             <div class="card">
               <div class="flex items-start justify-between mb-4">
                 <div class="flex items-center gap-3">
-                  <div
-                    class="avatar-box w-9 h-9 rounded-xl text-sm font-bold text-white"
-                  >
+                  <div class="avatar-box w-9 h-9 rounded-xl text-sm font-bold text-white">
                     {{ crypto.symbol.charAt(0) }}
                   </div>
                   <div>
-                    <p
-                      class="font-display font-semibold text-white text-sm leading-tight"
-                    >
+                    <p class="font-display font-semibold text-white text-sm leading-tight">
                       {{ crypto.symbol }}
                     </p>
-                    <p class="text-[11px] text-slate-500 mt-0.5">
-                      Criptomoneda
-                    </p>
+                    <p class="text-[11px] text-slate-500 mt-0.5">Criptomoneda</p>
                   </div>
                 </div>
-                <span
-                  class="badge"
-                  [class]="
-                    crypto.changePercent >= 0 ? 'badge-gain' : 'badge-loss'
-                  "
-                >
+                <span class="badge" [class]="crypto.changePercent >= 0 ? 'badge-gain' : 'badge-loss'">
                   {{ crypto.changePercent >= 0 ? "↑" : "↓" }}&nbsp;{{
-                    (crypto.changePercent < 0
-                      ? -crypto.changePercent
-                      : crypto.changePercent
-                    ) | number: "1.1-1"
+                    (crypto.changePercent < 0 ? -crypto.changePercent : crypto.changePercent) | number: "1.1-1"
                   }}%
                 </span>
               </div>
-              <div
-                class="font-display text-[1.6rem] font-bold text-white tracking-tight leading-none"
-              >
+              <div class="font-display text-[1.6rem] font-bold text-white tracking-tight leading-none">
                 USD {{ crypto.priceUsd | number: "1.0-0" }}
               </div>
-              <div class="text-slate-500 mt-1.5 text-sm">
-                ARS {{ crypto.priceArs | number: "1.0-0" }}
-              </div>
+              <div class="text-slate-500 mt-1.5 text-sm">ARS {{ crypto.priceArs | number: "1.0-0" }}</div>
             </div>
           }
         </div>
@@ -113,16 +95,11 @@
   <section class="card">
     <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
       <div>
-        <h2 class="font-display font-semibold text-white text-base">
-          Histórico
-        </h2>
+        <h2 class="font-display font-semibold text-white text-base">Histórico</h2>
         <p class="page-subtitle">Evolución del tipo de cambio</p>
       </div>
       <div class="flex items-center gap-2 flex-wrap">
-        <select
-          (change)="onTypeChange($any($event.target).value)"
-          class="input w-auto text-sm py-1.5 px-3"
-        >
+        <select (change)="onTypeChange($any($event.target).value)" class="input w-auto text-sm py-1.5 px-3">
           <option value="blue">Blue</option>
           <option value="oficial">Oficial</option>
           <option value="mep">MEP</option>
@@ -130,10 +107,7 @@
         </select>
         <div class="flex gap-1">
           @for (d of dayOptions; track d) {
-            <button
-              (click)="onDaysChange(d)"
-              [class]="selectedDays() === d ? 'day-pill-active' : 'day-pill'"
-            >
+            <button (click)="onDaysChange(d)" [class]="selectedDays() === d ? 'day-pill-active' : 'day-pill'">
               {{ d }}d
             </button>
           }
@@ -143,16 +117,9 @@
 
     @if (history$ | async; as history) {
       @if (history.length > 0) {
-        <canvas
-          baseChart
-          [data]="buildChartData(history)"
-          [options]="chartOptions()"
-          type="line"
-        ></canvas>
+        <canvas baseChart [data]="buildChartData(history)" [options]="chartOptions()" type="line"></canvas>
       } @else {
-        <div
-          class="flex flex-col items-center justify-center py-16 text-slate-500"
-        >
+        <div class="flex flex-col items-center justify-center py-16 text-slate-500">
           <span class="text-3xl mb-3 opacity-40">📊</span>
           <p class="text-sm">No hay datos disponibles</p>
         </div>

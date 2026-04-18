@@ -15,16 +15,22 @@ export class RatesEffects {
       ofType(RatesActions.loadRates),
       switchMap(() =>
         this.ratesService.getLatest().pipe(
-          map(response => RatesActions.loadRatesSuccess({
-            exchangeRates: response.exchangeRates,
-            cryptoRates: response.cryptoRates
-          })),
-          catchError(err => of(RatesActions.loadRatesFailure({
-            error: err.error?.error ?? 'Failed to load rates.'
-          })))
-        )
-      )
-    )
+          map((response) =>
+            RatesActions.loadRatesSuccess({
+              exchangeRates: response.exchangeRates,
+              cryptoRates: response.cryptoRates,
+            }),
+          ),
+          catchError((err) =>
+            of(
+              RatesActions.loadRatesFailure({
+                error: err.error?.error ?? 'Failed to load rates.',
+              }),
+            ),
+          ),
+        ),
+      ),
+    ),
   );
 
   loadHistory$ = createEffect(() =>
@@ -32,12 +38,16 @@ export class RatesEffects {
       ofType(RatesActions.loadHistory),
       switchMap(({ rateType, days }) =>
         this.ratesService.getHistory(rateType, days).pipe(
-          map(history => RatesActions.loadHistorySuccess({ history })),
-          catchError(err => of(RatesActions.loadHistoryFailure({
-            error: err.error?.error ?? 'Failed to load history.'
-          })))
-        )
-      )
-    )
+          map((history) => RatesActions.loadHistorySuccess({ history })),
+          catchError((err) =>
+            of(
+              RatesActions.loadHistoryFailure({
+                error: err.error?.error ?? 'Failed to load history.',
+              }),
+            ),
+          ),
+        ),
+      ),
+    ),
   );
 }

@@ -70,6 +70,6 @@ export const ratesFeature = createFeature({
       ...state,
       loading: false,
       error,
-    }))
+    })),
   ),
 });

@@ -7,13 +7,13 @@ import {
   selectAnalysis,
   selectAnalysisLoading,
   selectAnalysisError,
-  selectAnalysisGeneratedAt
+  selectAnalysisGeneratedAt,
 } from '../../store/analysis/analysis.selectors';
 
 @Component({
   selector: 'app-analysis',
   imports: [AsyncPipe, DatePipe, MarkdownComponent],
-  templateUrl: './analysis.component.html'
+  templateUrl: './analysis.component.html',
 })
 export class AnalysisComponent {
   private readonly store = inject(Store);

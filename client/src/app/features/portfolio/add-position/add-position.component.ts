@@ -12,13 +12,13 @@ const ASSET_TYPES = [
   { value: 'USDT', label: 'USDT' },
   { value: 'BTC', label: 'Bitcoin (BTC)' },
   { value: 'ETH', label: 'Ethereum (ETH)' },
-  { value: 'PLAZO_FIJO', label: 'Plazo Fijo' }
+  { value: 'PLAZO_FIJO', label: 'Plazo Fijo' },
 ];
 
 @Component({
   selector: 'app-add-position',
   imports: [ReactiveFormsModule, AsyncPipe],
-  templateUrl: './add-position.component.html'
+  templateUrl: './add-position.component.html',
 })
 export class AddPositionComponent {
   readonly cancelled = output<void>();
@@ -36,23 +36,25 @@ export class AddPositionComponent {
     purchaseDate: [new Date().toISOString().split('T')[0], Validators.required],
     notes: [''],
     interestRate: [null as number | null],
-    maturityDate: [null as string | null]
+    maturityDate: [null as string | null],
   });
 
   onSubmit() {
     if (this.form.valid) {
       const v = this.form.getRawValue();
-      this.store.dispatch(addPosition({
-        position: {
-          assetType: v.assetType,
-          amount: v.amount,
-          purchasePrice: v.purchasePrice,
-          purchaseDate: v.purchaseDate,
-          notes: v.notes || undefined,
-          interestRate: v.interestRate ?? undefined,
-          maturityDate: v.maturityDate ?? undefined
-        }
-      }));
+      this.store.dispatch(
+        addPosition({
+          position: {
+            assetType: v.assetType,
+            amount: v.amount,
+            purchasePrice: v.purchasePrice,
+            purchaseDate: v.purchaseDate,
+            notes: v.notes || undefined,
+            interestRate: v.interestRate ?? undefined,
+            maturityDate: v.maturityDate ?? undefined,
+          },
+        }),
+      );
     }
   }
 

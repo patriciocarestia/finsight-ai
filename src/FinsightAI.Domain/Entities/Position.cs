@@ -10,6 +10,7 @@ public class Position
     public decimal PurchasePrice { get; set; }
     public DateTime PurchaseDate { get; set; }
     public string? Notes { get; set; }
+
     // For Plazo Fijo
     public decimal? InterestRate { get; set; }
     public DateTime? MaturityDate { get; set; }

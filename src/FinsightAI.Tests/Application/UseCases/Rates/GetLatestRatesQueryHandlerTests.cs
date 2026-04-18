@@ -12,8 +12,7 @@ public class GetLatestRatesQueryHandlerTests
         [Fact]
         public void Should_throw_ArgumentNullException_when_rateRepository_is_null()
         {
-            Assert.Throws<ArgumentNullException>(() =>
-                new GetLatestRatesQueryHandler(null!));
+            Assert.Throws<ArgumentNullException>(() => new GetLatestRatesQueryHandler(null!));
         }
     }
 
@@ -25,12 +24,34 @@ public class GetLatestRatesQueryHandlerTests
             // Arrange
             var exchangeRates = new List<ExchangeRate>
             {
-                new() { Id = 1, Type = "blue", Buy = 1200m, Sell = 1250m, RecordedAt = DateTime.UtcNow },
-                new() { Id = 2, Type = "oficial", Buy = 800m, Sell = 850m, RecordedAt = DateTime.UtcNow }
+                new()
+                {
+                    Id = 1,
+                    Type = "blue",
+                    Buy = 1200m,
+                    Sell = 1250m,
+                    RecordedAt = DateTime.UtcNow,
+                },
+                new()
+                {
+                    Id = 2,
+                    Type = "oficial",
+                    Buy = 800m,
+                    Sell = 850m,
+                    RecordedAt = DateTime.UtcNow,
+                },
             };
             var cryptoRates = new List<CryptoRate>
             {
-                new() { Id = 1, Symbol = "BTC", PriceUsd = 65000m, PriceArs = 81250000m, ChangePercent24h = 2.5m, RecordedAt = DateTime.UtcNow }
+                new()
+                {
+                    Id = 1,
+                    Symbol = "BTC",
+                    PriceUsd = 65000m,
+                    PriceArs = 81250000m,
+                    ChangePercent24h = 2.5m,
+                    RecordedAt = DateTime.UtcNow,
+                },
             };
 
             var repository = Mock.Of<IRateRepository>();

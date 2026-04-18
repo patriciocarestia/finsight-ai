@@ -9,7 +9,7 @@ import { ThemeService } from '../../../core/services/theme.service';
 @Component({
   selector: 'app-navbar',
   imports: [RouterLink, RouterLinkActive, AsyncPipe],
-  templateUrl: './navbar.component.html'
+  templateUrl: './navbar.component.html',
 })
 export class NavbarComponent {
   private readonly store = inject(Store);

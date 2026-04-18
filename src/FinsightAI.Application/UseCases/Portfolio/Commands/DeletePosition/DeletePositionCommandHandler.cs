@@ -15,7 +15,8 @@ public class DeletePositionCommandHandler : IRequestHandler<DeletePositionComman
 
     public async Task Handle(DeletePositionCommand request, CancellationToken cancellationToken)
     {
-        var position = await this.positionRepository.GetByIdAsync(request.Id, cancellationToken)
+        var position =
+            await this.positionRepository.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new KeyNotFoundException($"Position {request.Id} not found.");
 
         if (position.UserId != request.UserId)

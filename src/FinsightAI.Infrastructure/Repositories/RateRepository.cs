@@ -15,15 +15,17 @@ public class RateRepository : IRateRepository
         this.context = context;
     }
 
-    public async Task<IEnumerable<ExchangeRate>> GetLatestRatesAsync(CancellationToken cancellationToken)
+    public async Task<IEnumerable<ExchangeRate>> GetLatestRatesAsync(
+        CancellationToken cancellationToken
+    )
     {
         var types = new[] { "oficial", "blue", "mep", "ccl", "cripto" };
         var result = new List<ExchangeRate>();
 
         foreach (var type in types)
         {
-            var latest = await this.context.ExchangeRates
-                .Where(r => r.Type == type)
+            var latest = await this
+                .context.ExchangeRates.Where(r => r.Type == type)
                 .OrderByDescending(r => r.RecordedAt)
                 .FirstOrDefaultAsync(cancellationToken);
 
@@ -34,23 +36,26 @@ public class RateRepository : IRateRepository
         return result;
     }
 
-    public async Task<IEnumerable<ExchangeRate>> GetPreviousDayRatesAsync(CancellationToken cancellationToken)
+    public async Task<IEnumerable<ExchangeRate>> GetPreviousDayRatesAsync(
+        CancellationToken cancellationToken
+    )
     {
         var types = new[] { "oficial", "blue", "mep", "ccl", "cripto" };
         var result = new List<ExchangeRate>();
 
         foreach (var type in types)
         {
-            var latestDate = await this.context.ExchangeRates
-                .Where(r => r.Type == type)
+            var latestDate = await this
+                .context.ExchangeRates.Where(r => r.Type == type)
                 .MaxAsync(r => (DateTime?)r.RecordedAt, cancellationToken);
 
-            if (latestDate is null) continue;
+            if (latestDate is null)
+                continue;
 
             var cutoff = latestDate.Value.Date;
 
-            var previous = await this.context.ExchangeRates
-                .Where(r => r.Type == type && r.RecordedAt < cutoff)
+            var previous = await this
+                .context.ExchangeRates.Where(r => r.Type == type && r.RecordedAt < cutoff)
                 .OrderByDescending(r => r.RecordedAt)
                 .FirstOrDefaultAsync(cancellationToken);
 
@@ -61,24 +66,30 @@ public class RateRepository : IRateRepository
         return result;
     }
 
-    public async Task<IEnumerable<ExchangeRate>> GetRateHistoryAsync(string type, int days, CancellationToken cancellationToken)
+    public async Task<IEnumerable<ExchangeRate>> GetRateHistoryAsync(
+        string type,
+        int days,
+        CancellationToken cancellationToken
+    )
     {
         var since = DateTime.UtcNow.AddDays(-days);
-        return await this.context.ExchangeRates
-            .Where(r => r.Type == type && r.RecordedAt >= since)
+        return await this
+            .context.ExchangeRates.Where(r => r.Type == type && r.RecordedAt >= since)
             .OrderBy(r => r.RecordedAt)
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<CryptoRate>> GetLatestCryptoRatesAsync(CancellationToken cancellationToken)
+    public async Task<IEnumerable<CryptoRate>> GetLatestCryptoRatesAsync(
+        CancellationToken cancellationToken
+    )
     {
         var symbols = new[] { "BTC", "ETH" };
         var result = new List<CryptoRate>();
 
         foreach (var symbol in symbols)
         {
-            var latest = await this.context.CryptoRates
-                .Where(r => r.Symbol == symbol)
+            var latest = await this
+                .context.CryptoRates.Where(r => r.Symbol == symbol)
                 .OrderByDescending(r => r.RecordedAt)
                 .FirstOrDefaultAsync(cancellationToken);
 
@@ -89,23 +100,26 @@ public class RateRepository : IRateRepository
         return result;
     }
 
-    public async Task<IEnumerable<CryptoRate>> GetPreviousDayCryptoRatesAsync(CancellationToken cancellationToken)
+    public async Task<IEnumerable<CryptoRate>> GetPreviousDayCryptoRatesAsync(
+        CancellationToken cancellationToken
+    )
     {
         var symbols = new[] { "BTC", "ETH" };
         var result = new List<CryptoRate>();
 
         foreach (var symbol in symbols)
         {
-            var latestDate = await this.context.CryptoRates
-                .Where(r => r.Symbol == symbol)
+            var latestDate = await this
+                .context.CryptoRates.Where(r => r.Symbol == symbol)
                 .MaxAsync(r => (DateTime?)r.RecordedAt, cancellationToken);
 
-            if (latestDate is null) continue;
+            if (latestDate is null)
+                continue;
 
             var cutoff = latestDate.Value.Date;
 
-            var previous = await this.context.CryptoRates
-                .Where(r => r.Symbol == symbol && r.RecordedAt < cutoff)
+            var previous = await this
+                .context.CryptoRates.Where(r => r.Symbol == symbol && r.RecordedAt < cutoff)
                 .OrderByDescending(r => r.RecordedAt)
                 .FirstOrDefaultAsync(cancellationToken);
 
@@ -116,22 +130,32 @@ public class RateRepository : IRateRepository
         return result;
     }
 
-    public async Task<IEnumerable<CryptoRate>> GetCryptoHistoryAsync(string symbol, int days, CancellationToken cancellationToken)
+    public async Task<IEnumerable<CryptoRate>> GetCryptoHistoryAsync(
+        string symbol,
+        int days,
+        CancellationToken cancellationToken
+    )
     {
         var since = DateTime.UtcNow.AddDays(-days);
-        return await this.context.CryptoRates
-            .Where(r => r.Symbol == symbol && r.RecordedAt >= since)
+        return await this
+            .context.CryptoRates.Where(r => r.Symbol == symbol && r.RecordedAt >= since)
             .OrderBy(r => r.RecordedAt)
             .ToListAsync(cancellationToken);
     }
 
-    public async Task AddExchangeRatesAsync(IEnumerable<ExchangeRate> rates, CancellationToken cancellationToken)
+    public async Task AddExchangeRatesAsync(
+        IEnumerable<ExchangeRate> rates,
+        CancellationToken cancellationToken
+    )
     {
         this.context.ExchangeRates.AddRange(rates);
         await this.context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task AddCryptoRatesAsync(IEnumerable<CryptoRate> rates, CancellationToken cancellationToken)
+    public async Task AddCryptoRatesAsync(
+        IEnumerable<CryptoRate> rates,
+        CancellationToken cancellationToken
+    )
     {
         this.context.CryptoRates.AddRange(rates);
         await this.context.SaveChangesAsync(cancellationToken);

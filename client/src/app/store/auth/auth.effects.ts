@@ -15,17 +15,23 @@ export class AuthEffects {
       ofType(AuthActions.login),
       switchMap(({ email, password }) =>
         this.authService.login({ email, password }).pipe(
-          map(response => AuthActions.loginSuccess({
-            token: response.token,
-            email: response.email,
-            expiresAt: response.expiresAt
-          })),
-          catchError(err => of(AuthActions.loginFailure({
-            error: err.error?.error ?? 'Login failed. Please try again.'
-          })))
-        )
-      )
-    )
+          map((response) =>
+            AuthActions.loginSuccess({
+              token: response.token,
+              email: response.email,
+              expiresAt: response.expiresAt,
+            }),
+          ),
+          catchError((err) =>
+            of(
+              AuthActions.loginFailure({
+                error: err.error?.error ?? 'Login failed. Please try again.',
+              }),
+            ),
+          ),
+        ),
+      ),
+    ),
   );
 
   register$ = createEffect(() =>
@@ -33,16 +39,22 @@ export class AuthEffects {
       ofType(AuthActions.register),
       switchMap(({ email, password }) =>
         this.authService.register({ email, password }).pipe(
-          map(response => AuthActions.registerSuccess({
-            token: response.token,
-            email: response.email,
-            expiresAt: response.expiresAt
-          })),
-          catchError(err => of(AuthActions.registerFailure({
-            error: err.error?.error ?? 'Registration failed. Please try again.'
-          })))
-        )
-      )
-    )
+          map((response) =>
+            AuthActions.registerSuccess({
+              token: response.token,
+              email: response.email,
+              expiresAt: response.expiresAt,
+            }),
+          ),
+          catchError((err) =>
+            of(
+              AuthActions.registerFailure({
+                error: err.error?.error ?? 'Registration failed. Please try again.',
+              }),
+            ),
+          ),
+        ),
+      ),
+    ),
   );
 }

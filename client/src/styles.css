@@ -2,72 +2,306 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
 * {
   box-sizing: border-box;
 }
 
 body {
-  @apply bg-slate-950 text-slate-100 font-sans;
+  @apply text-slate-100 font-sans antialiased;
   margin: 0;
+  background-color: #09090b;
 }
 
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
 }
 ::-webkit-scrollbar-track {
-  @apply bg-slate-900;
+  background: #09090b;
 }
 ::-webkit-scrollbar-thumb {
+  @apply bg-slate-700/60 rounded-full;
+}
+::-webkit-scrollbar-thumb:hover {
   @apply bg-slate-600 rounded-full;
 }
 
+/* ── Cards ─────────────────────────────────────────────────────── */
 .card {
-  @apply bg-slate-800 rounded-xl p-6 border border-slate-700;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  @apply rounded-2xl p-6;
 }
 
+/* ── Buttons ────────────────────────────────────────────────────── */
 .btn-primary {
-  @apply bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  @apply inline-flex items-center justify-center text-white font-medium py-2 px-4 rounded-xl
+         transition-all duration-200 cursor-pointer
+         disabled:opacity-40 disabled:cursor-not-allowed
+         hover:opacity-90 hover:shadow-lg active:scale-[0.98];
+  box-shadow: 0 1px 20px rgba(59, 130, 246, 0.15);
 }
 
 .btn-secondary {
-  @apply bg-slate-700 hover:bg-slate-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  @apply inline-flex items-center justify-center text-slate-300 font-medium py-2 px-4 rounded-xl
+         transition-all duration-200 cursor-pointer
+         hover:bg-white/10 hover:text-white hover:border-white/10
+         disabled:opacity-40 disabled:cursor-not-allowed;
 }
 
 .btn-danger {
-  @apply bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  @apply inline-flex items-center justify-center text-red-400 font-medium py-2 px-4 rounded-xl
+         transition-all duration-200 cursor-pointer
+         hover:bg-red-500/10 hover:text-red-300;
 }
 
+/* ── Inputs ─────────────────────────────────────────────────────── */
 .input {
-  @apply w-full bg-slate-900 border border-slate-700 text-slate-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-slate-500;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  @apply w-full text-slate-100 rounded-xl px-3 py-2.5 text-sm
+         transition-all duration-200
+         focus:outline-none placeholder-slate-600;
+}
+
+.input:focus {
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.input option {
+  background: #18181b;
+  color: #f1f5f9;
 }
 
 .label {
-  @apply block text-sm font-medium text-slate-300 mb-1;
+  @apply block text-xs font-medium text-slate-500 mb-1.5 uppercase tracking-wider;
 }
 
+/* ── Status badges ──────────────────────────────────────────────── */
 .gain {
   @apply text-green-400;
 }
-
 .loss {
   @apply text-red-400;
 }
 
+.badge-gain {
+  background: rgba(74, 222, 128, 0.08);
+  border: 1px solid rgba(74, 222, 128, 0.2);
+  @apply text-green-400;
+}
+
+.badge-loss {
+  background: rgba(248, 113, 113, 0.08);
+  border: 1px solid rgba(248, 113, 113, 0.2);
+  @apply text-red-400;
+}
+
+/* ── Markdown analysis ──────────────────────────────────────────── */
 .markdown-analysis {
   @apply text-slate-300 text-sm leading-relaxed;
 }
-.markdown-analysis h1, .markdown-analysis h2, .markdown-analysis h3 {
-  @apply text-white font-semibold mt-5 mb-2;
+
+.markdown-analysis h1,
+.markdown-analysis h2,
+.markdown-analysis h3 {
+  font-family: "Space Grotesk", sans-serif;
+  @apply font-semibold mt-6 mb-2;
 }
-.markdown-analysis h1 { @apply text-xl; }
-.markdown-analysis h2 { @apply text-lg; }
-.markdown-analysis h3 { @apply text-base; }
-.markdown-analysis p { @apply mb-3; }
-.markdown-analysis ul, .markdown-analysis ol { @apply pl-5 mb-3 space-y-1; }
-.markdown-analysis li { @apply list-disc; }
-.markdown-analysis ol li { @apply list-decimal; }
-.markdown-analysis strong { @apply text-white font-semibold; }
-.markdown-analysis code { @apply bg-slate-900 text-blue-300 px-1 rounded text-xs; }
-.markdown-analysis blockquote { @apply border-l-2 border-blue-500 pl-3 text-slate-400 italic my-3; }
+
+.markdown-analysis h1 {
+  @apply text-xl text-white;
+}
+.markdown-analysis h2 {
+  @apply text-lg text-white;
+}
+.markdown-analysis h3 {
+  @apply text-base text-slate-100;
+}
+.markdown-analysis p {
+  @apply mb-3;
+}
+.markdown-analysis ul,
+.markdown-analysis ol {
+  @apply pl-5 mb-3 space-y-1;
+}
+.markdown-analysis li {
+  @apply list-disc;
+}
+.markdown-analysis ol li {
+  @apply list-decimal;
+}
+.markdown-analysis strong {
+  @apply text-white font-semibold;
+}
+
+.markdown-analysis code {
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  @apply text-blue-300 px-1.5 py-0.5 rounded text-xs;
+}
+
+.markdown-analysis blockquote {
+  background: rgba(59, 130, 246, 0.04);
+  border-left: 2px solid rgba(59, 130, 246, 0.4);
+  @apply pl-4 text-slate-400 italic my-3 py-2 rounded-r-lg;
+}
+
+.markdown-analysis table {
+  @apply w-full text-sm mb-4;
+}
+.markdown-analysis th {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  @apply text-slate-400 text-left py-2 pr-4 text-xs uppercase tracking-wider;
+}
+.markdown-analysis td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  @apply text-slate-400 py-2 pr-4;
+}
+
+/* ── Utilities ──────────────────────────────────────────────────── */
+.font-display {
+  font-family: "Space Grotesk", sans-serif;
+}
+
+/* Auth page logo mark */
+.logo-mark {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.2);
+}
+
+/* Navbar */
+.navbar {
+  background: rgba(9, 9, 11, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.navbar-logo-icon {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+}
+
+.navbar-logo-ai {
+  background: linear-gradient(135deg, #60a5fa, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.navbar-divider {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.navbar-mobile-bg {
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(9, 9, 11, 0.97);
+}
+
+.navbar-mobile-separator {
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Page header */
+.page-title {
+  font-family: "Space Grotesk", sans-serif;
+  @apply text-2xl font-bold text-white tracking-tight;
+}
+
+.page-subtitle {
+  @apply text-slate-600 mt-0.5 text-sm;
+}
+
+/* Section divider header */
+.section-header {
+  @apply flex items-center gap-3 mb-5;
+}
+
+.section-header h2 {
+  @apply text-xs font-medium text-slate-500 uppercase tracking-widest whitespace-nowrap;
+}
+
+.section-divider {
+  @apply flex-1 h-px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Stat cards */
+.stat-label {
+  @apply text-[11px] text-slate-600 uppercase tracking-widest mb-2;
+}
+
+.stat-value {
+  font-family: "Space Grotesk", sans-serif;
+  @apply text-xl font-bold text-white tracking-tight;
+}
+
+/* Icon boxes */
+.icon-box {
+  @apply flex items-center justify-center shrink-0;
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.12),
+    rgba(139, 92, 246, 0.12)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.avatar-box {
+  @apply flex items-center justify-center shrink-0 text-xs font-semibold text-slate-400;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Badge base — pair with badge-gain or badge-loss */
+.badge {
+  @apply text-[11px] px-1.5 py-0.5 rounded-full font-medium;
+}
+
+/* Error banner */
+.error-banner {
+  @apply flex items-center gap-2 rounded-xl px-4 py-3 text-sm text-red-400;
+  background: rgba(239, 68, 68, 0.06);
+  border: 1px solid rgba(239, 68, 68, 0.15);
+}
+
+/* Skeleton shimmer */
+.skeleton {
+  @apply rounded-lg animate-pulse;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Day range selector pills */
+.day-pill {
+  @apply px-2.5 py-1 rounded-lg text-xs font-medium text-slate-500
+         hover:text-slate-300 transition-colors duration-200 cursor-pointer;
+}
+
+.day-pill-active {
+  @apply px-2.5 py-1 rounded-lg text-xs font-medium text-white cursor-pointer;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+}
+
+/* Table */
+.th {
+  @apply py-3.5 text-[11px] font-medium text-slate-600 uppercase tracking-widest;
+}
+
+.table-divider {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.table-row {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.025);
+  transition: background 150ms;
+}
+
+.table-row:hover {
+  background: rgba(255, 255, 255, 0.015);
+}

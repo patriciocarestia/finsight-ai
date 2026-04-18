@@ -37,13 +37,20 @@ public class RateRepository : IRateRepository
     public async Task<IEnumerable<ExchangeRate>> GetPreviousDayRatesAsync(CancellationToken cancellationToken)
     {
         var types = new[] { "oficial", "blue", "mep", "ccl", "cripto" };
-        var today = DateTime.UtcNow.Date;
         var result = new List<ExchangeRate>();
 
         foreach (var type in types)
         {
+            var latestDate = await this.context.ExchangeRates
+                .Where(r => r.Type == type)
+                .MaxAsync(r => (DateTime?)r.RecordedAt, cancellationToken);
+
+            if (latestDate is null) continue;
+
+            var cutoff = latestDate.Value.Date;
+
             var previous = await this.context.ExchangeRates
-                .Where(r => r.Type == type && r.RecordedAt < today)
+                .Where(r => r.Type == type && r.RecordedAt < cutoff)
                 .OrderByDescending(r => r.RecordedAt)
                 .FirstOrDefaultAsync(cancellationToken);
 
@@ -85,13 +92,20 @@ public class RateRepository : IRateRepository
     public async Task<IEnumerable<CryptoRate>> GetPreviousDayCryptoRatesAsync(CancellationToken cancellationToken)
     {
         var symbols = new[] { "BTC", "ETH" };
-        var today = DateTime.UtcNow.Date;
         var result = new List<CryptoRate>();
 
         foreach (var symbol in symbols)
         {
+            var latestDate = await this.context.CryptoRates
+                .Where(r => r.Symbol == symbol)
+                .MaxAsync(r => (DateTime?)r.RecordedAt, cancellationToken);
+
+            if (latestDate is null) continue;
+
+            var cutoff = latestDate.Value.Date;
+
             var previous = await this.context.CryptoRates
-                .Where(r => r.Symbol == symbol && r.RecordedAt < today)
+                .Where(r => r.Symbol == symbol && r.RecordedAt < cutoff)
                 .OrderByDescending(r => r.RecordedAt)
                 .FirstOrDefaultAsync(cancellationToken);
 

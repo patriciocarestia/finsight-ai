@@ -10,7 +10,7 @@ import {
   selectCryptoRates,
   selectRatesHistory,
   selectRatesLoading,
-  selectLastFetched
+  selectLastFetched,
 } from '../../store/rates/rates.selectors';
 import { ExchangeRate } from '../../store/rates/rates.model';
 
@@ -19,13 +19,19 @@ const RATE_LABELS: Record<string, string> = {
   blue: 'Dólar Blue',
   mep: 'Dólar MEP',
   ccl: 'Dólar CCL',
-  cripto: 'Dólar Cripto'
+  cripto: 'Dólar Cripto',
 };
 
 @Component({
   selector: 'app-dashboard',
-  imports: [AsyncPipe, DecimalPipe, DatePipe, RateCardComponent, BaseChartDirective],
-  templateUrl: './dashboard.component.html'
+  imports: [
+    AsyncPipe,
+    DecimalPipe,
+    DatePipe,
+    RateCardComponent,
+    BaseChartDirective,
+  ],
+  templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   private readonly store = inject(Store);
@@ -45,26 +51,41 @@ export class DashboardComponent implements OnInit, OnDestroy {
     responsive: true,
     plugins: {
       legend: { display: false },
-      tooltip: { mode: 'index', intersect: false }
+      tooltip: {
+        mode: 'index',
+        intersect: false,
+        backgroundColor: 'rgba(9,9,11,0.9)',
+        borderColor: 'rgba(255,255,255,0.08)',
+        borderWidth: 1,
+        titleColor: '#94a3b8',
+        bodyColor: '#f8fafc',
+        padding: 10,
+        displayColors: false,
+      },
     },
     scales: {
       x: {
-        ticks: { color: '#94a3b8', maxTicksLimit: 8 },
-        grid: { color: '#1e293b' }
+        ticks: { color: '#475569', maxTicksLimit: 8, font: { size: 11 } },
+        grid: { color: 'rgba(255,255,255,0.03)' },
+        border: { color: 'rgba(255,255,255,0.04)' },
       },
       y: {
         beginAtZero: false,
         grace: '12%',
-        ticks: { color: '#94a3b8' },
-        grid: { color: '#1e293b' }
-      }
-    }
+        ticks: { color: '#475569', font: { size: 11 } },
+        grid: { color: 'rgba(255,255,255,0.03)' },
+        border: { color: 'rgba(255,255,255,0.04)' },
+      },
+    },
   };
 
   ngOnInit() {
     this.store.dispatch(loadRates());
     this.loadHistory();
-    this.refreshInterval = setInterval(() => this.store.dispatch(loadRates()), 5 * 60 * 1000);
+    this.refreshInterval = setInterval(
+      () => this.store.dispatch(loadRates()),
+      5 * 60 * 1000,
+    );
   }
 
   ngOnDestroy() {
@@ -92,12 +113,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   buildChartData(history: ExchangeRate[]): ChartConfiguration['data'] {
     const sorted = [...history].sort(
-      (a, b) => new Date(a.recordedAt).getTime() - new Date(b.recordedAt).getTime()
+      (a, b) =>
+        new Date(a.recordedAt).getTime() - new Date(b.recordedAt).getTime(),
     );
 
     const byDay = new Map<string, number>();
     for (const r of sorted) {
-      const day = new Date(r.recordedAt).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' });
+      const day = new Date(r.recordedAt).toLocaleDateString('es-AR', {
+        day: '2-digit',
+        month: '2-digit',
+      });
       byDay.set(day, r.sell);
     }
 
@@ -105,18 +130,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     return {
       labels: entries.map(([day]) => day),
-      datasets: [{
-        data: entries.map(([, sell]) => sell),
-        borderColor: '#3b82f6',
-        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-        fill: true,
-        tension: 0.4,
-        pointRadius: 0
-      }]
+      datasets: [
+        {
+          data: entries.map(([, sell]) => sell),
+          borderColor: '#6366f1',
+          backgroundColor: 'rgba(99, 102, 241, 0.07)',
+          fill: true,
+          tension: 0.4,
+          pointRadius: 0,
+          borderWidth: 1.5,
+        },
+      ],
     };
   }
 
   private loadHistory() {
-    this.store.dispatch(loadHistory({ rateType: this.selectedType, days: this.selectedDays() }));
+    this.store.dispatch(
+      loadHistory({ rateType: this.selectedType, days: this.selectedDays() }),
+    );
   }
 }

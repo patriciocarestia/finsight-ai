@@ -131,7 +131,6 @@ finsight-ai/
 - Export to CSV/PDF
 - Support for CEDEARs and acciones argentinas
 - Social comparison (anonymous benchmarks)
-- Mobile app (Angular + Capacitor)
 
 ---
 

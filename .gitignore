@@ -54,3 +54,4 @@ Thumbs.db
 .vscode/node_modules/
 node_modules/
 client/node_modules/
+.vscode

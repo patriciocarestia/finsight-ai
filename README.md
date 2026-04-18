@@ -8,7 +8,7 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript)
 ![SQLite](https://img.shields.io/badge/SQLite-003B57?logo=sqlite)
 
-**[Live Demo](https://finsight-ai.azurestaticapps.net)** · **[API Docs](https://finsight-ai-api.azurewebsites.net/swagger)**
+**[Live Demo](https://calm-meadow-03b318b10.7.azurestaticapps.net/)** · **[API Docs](https://finsight-ai-api.azurewebsites.net/swagger)**
 
 ---
 

@@ -134,4 +134,4 @@ finsight-ai/
 
 ---
 
-Built by [Patricio Carestia](https://linkedin.com/in/YOUR_PROFILE) · Full Stack Engineer · Argentina
+Built by [Patricio Carestia](https://www.linkedin.com/in/patriciocarestia/) · Full Stack Engineer · Argentina

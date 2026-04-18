@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/patriciocarestia/finsight-ai/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/patriciocarestia/finsight-ai/actions)
 ![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)
-![Angular](https://img.shields.io/badge/Angular-19-DD0031?logo=angular)
+![Angular](https://img.shields.io/badge/Angular-21-DD0031?logo=angular)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript)
 ![SQLite](https://img.shields.io/badge/SQLite-003B57?logo=sqlite)
 
@@ -32,20 +32,24 @@
 
 Argentina has multiple parallel exchange rates (Oficial, Blue, MEP, CCL, Cripto), each with different legality and accessibility. Investors need to track holdings across ARS cash, USD blue, USDT, crypto, and Plazos Fijos — then compare returns against inflation (historically ~140%/year). No single tool does this.
 
+---
+
 ## Features
 
-- **Live exchange rates** — Dólar Oficial, Blue, MEP, CCL, Cripto refreshed every 5 minutes
+- **Live exchange rates** — Dólar Oficial, Blue, MEP, CCL, Cripto refreshed every 15 minutes
 - **Crypto prices** — BTC and ETH in both USD and ARS
-- **Historical charts** — 7d / 30d / 90d price history with interactive line charts
+- **Historical charts** — 7d / 30d / 90d price history with interactive charts
 - **Portfolio tracker** — add positions in any asset type with purchase price and date
-- **AI analysis** — Gemini 2.5 Flash analyzes your portfolio in Spanish, comparing returns vs. inflation and USD Blue
+- **AI analysis** — Gemini 2.5 Flash analyzes your portfolio in Spanish, comparing returns vs inflation and USD Blue
 - **JWT authentication** — secure per-user portfolio data
+
+---
 
 ## Tech Stack
 
 | Layer    | Technology                                                    |
-| -------- | ------------------------------------------------------------- |
-| Frontend | Angular 19, TypeScript, NgRx, Signals, Tailwind CSS, Chart.js |
+|----------|---------------------------------------------------------------|
+| Frontend | Angular 21, TypeScript, NgRx, Signals, Tailwind CSS, Chart.js |
 | Backend  | .NET 10, C#, Clean Architecture, MediatR (CQRS)               |
 | Database | SQLite (EF Core code-first)                                   |
 | AI       | Google Gemini 2.5 Flash                                       |
@@ -54,11 +58,13 @@ Argentina has multiple parallel exchange rates (Oficial, Blue, MEP, CCL, Cripto)
 | CI/CD    | GitHub Actions                                                |
 | Hosting  | Azure Static Web Apps + Azure App Service F1                  |
 
+---
+
 ## Architecture
 
-```text
+```
 ┌─────────────────────────────────┐
-│         Angular 19 SPA          │
+│         Angular 21 SPA          │
 │  NgRx Store · Signals · Charts  │
 └────────────────┬────────────────┘
                  │ HTTP + JWT
@@ -80,10 +86,12 @@ Argentina has multiple parallel exchange rates (Oficial, Blue, MEP, CCL, Cripto)
   fetches & stores rates
 ```
 
+---
+
 ## API Endpoints
 
 | Method | Route                                  | Auth | Description                     |
-| ------ | -------------------------------------- | ---- | ------------------------------- |
+|--------|----------------------------------------|------|---------------------------------|
 | POST   | `/api/auth/register`                   | 🔓   | Create account                  |
 | POST   | `/api/auth/login`                      | 🔓   | Get JWT token                   |
 | GET    | `/api/rates/latest`                    | 🔓   | Current exchange + crypto rates |
@@ -94,33 +102,37 @@ Argentina has multiple parallel exchange rates (Oficial, Blue, MEP, CCL, Cripto)
 | DELETE | `/api/portfolio/{id}`                  | ✅   | Delete position                 |
 | POST   | `/api/analysis`                        | ✅   | Trigger AI analysis             |
 
+---
+
 ## Project Structure
 
 ```
 finsight-ai/
 ├── src/
-│   ├── FinsightAI.API/          # Controllers, middleware, Program.cs
-│   ├── FinsightAI.Application/  # CQRS: Commands, Queries, Handlers, DTOs
-│   ├── FinsightAI.Domain/       # Entities (User, Position, ExchangeRate, CryptoRate)
-│   ├── FinsightAI.Infrastructure/ # EF Core, repositories, Gemini, DolarAPI, CoinGecko
-│   └── FinsightAI.Tests/        # xUnit + Moq unit tests
-└── client/                      # Angular 19 SPA
+│   ├── FinsightAI.API/
+│   ├── FinsightAI.Application/
+│   ├── FinsightAI.Domain/
+│   ├── FinsightAI.Infrastructure/
+│   └── FinsightAI.Tests/
+└── client/                      # Angular 21 SPA
     └── src/app/
-        ├── core/                # Services, interceptors, guards
-        ├── features/            # Dashboard, Portfolio, Analysis, Auth
-        ├── shared/              # Reusable components
-        └── store/               # NgRx: auth, rates, portfolio, analysis
+        ├── core/
+        ├── features/
+        ├── shared/
+        └── store/
 ```
+
+---
 
 ## Future Improvements
 
-- Price alerts (notify when Blue hits a threshold)
-- Portfolio performance graph over time
+- Price alerts
+- Portfolio performance over time
 - Export to CSV/PDF
 - Support for CEDEARs and acciones argentinas
-- Social comparison (anonymous portfolio benchmarks)
+- Social comparison (anonymous benchmarks)
 - Mobile app (Angular + Capacitor)
 
 ---
 
-Built by [Patricio Carestia](https://linkedin.com/in/YOUR_PROFILE) · Full Stack Engineer · Argentina
+Built by [Patricio Carestia](https://linkedin.com/in/YOUR_PROFILE)

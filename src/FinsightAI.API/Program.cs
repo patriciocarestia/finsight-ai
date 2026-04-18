@@ -76,13 +76,15 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
     {
-        var allowedOrigins = builder.Configuration["AllowedOrigins"]?.Split(",")
-                             ?? new[] { "http://localhost:4200" };
+        var origins = builder.Configuration["AllowedOrigins"]?
+            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+            ?? new[] { "http://localhost:4200" };
 
         policy
-            .WithOrigins(allowedOrigins)
+            .WithOrigins(origins)
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 

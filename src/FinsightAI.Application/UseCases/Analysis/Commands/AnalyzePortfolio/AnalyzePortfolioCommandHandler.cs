@@ -70,39 +70,46 @@ public class AnalyzePortfolioCommandHandler
         );
 
         var prompt = $"""
-            Sos un asesor financiero argentino. La fecha actual es abril 2026. Todas las fechas del portfolio son correctas, estamos en 2026. Tu trabajo es analizar el portfolio del usuario y darle feedback útil.
-            Reglas de formato y tono:
-            - Máximo 600 palabras
-            - Tuteá al usuario, hablale de vos como un asesor cercano pero profesional
-            - No expliques conceptos básicos, asumí que el usuario entiende de finanzas
-            - No pongas disclaimers, introducciones formales ni despedidas
-            - Usá números concretos siempre, no redondees de más
-            - No uses fórmulas matemáticas, mostrá directamente los resultados
-            Estructura fija (respetala siempre):
-            ## Resumen rápido
-            Una oración con el veredicto general del portfolio.
-            ## Posición por posición
-            Cuánto invertiste, cuánto vale hoy, ganancia/pérdida en pesos y porcentaje.
-            ## Versus inflación
-            Cuánto perdió o ganó en términos reales.
-            ## Qué haría yo
-            2-3 sugerencias concretas y cortas, sin explicar por qué funcionan los instrumentos.
+            Sos un asesor financiero argentino en abril 2026. Analizá el portfolio del usuario con criterio profesional y directo.
 
-            Portfolio del usuario:
+            Reglas:
+            - Máx. 400 palabras
+            - Tono cercano, sin formalidades ni disclaimers
+            - Usá números concretos (ARS y %)
+            - No expliques conceptos básicos
+            - Sé claro, sintético e inteligente
+
+            Formato (respetar exacto):
+
+            ## Resumen
+            1 frase con el estado general del portfolio.
+
+            ## Performance
+            Para cada posición:
+            - Inversión inicial vs valor actual
+            - Ganancia/pérdida en ARS y %
+            - Breve insight (1 línea)
+
+            ## Real vs inflación
+            Compará contra inflación (~140%) y dólar blue.
+            Decí si ganó o perdió poder adquisitivo.
+
+            ## Recomendaciones
+            3 acciones concretas y directas (sin explicación teórica).
+
+            Datos:
+
+            Portfolio:
             {portfolioJson}
 
-            Cotizaciones actuales (ARS):
+            Dólar (ARS):
             {ratesJson}
 
-            Criptomonedas:
+            Crypto:
             {cryptoJson}
 
-            Inflación estimada últimos 12 meses: ~140%
-
-            Analizá el desempeño del portfolio: qué está rindiendo bien, qué está perdiendo, y compará los retornos contra la inflación y contra mantener dólares blue.
-            Sé específico con números y porcentajes.
-            Dá 3 sugerencias concretas y accionables para mejorar el portfolio.
-            Respondé en español, de forma clara y concisa.
+            Objetivo:
+            Detectar qué funciona, qué no, y cómo mejorar el rendimiento real del portfolio.
             """;
 
         var analysis = await this.geminiClient.GenerateContentAsync(prompt, cancellationToken);

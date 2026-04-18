@@ -4,8 +4,8 @@ on:
   push:
     branches: [main]
     paths:
-      - 'client/**'
-      - '.github/workflows/frontend.yml'
+      - 'src/**'
+      - '.github/workflows/backend.yml'
 
 jobs:
   backend:

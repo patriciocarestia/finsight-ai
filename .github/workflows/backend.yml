@@ -3,6 +3,9 @@ name: Backend CI/CD
 on:
   push:
     branches: [main]
+    paths:
+      - 'client/**'
+      - '.github/workflows/frontend.yml'
 
 jobs:
   backend:

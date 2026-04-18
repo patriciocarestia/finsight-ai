@@ -76,9 +76,11 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
     {
-        policy.WithOrigins(
-                builder.Configuration["AllowedOrigins"] ?? "http://localhost:4200",
-                "https://finsight-ai.azurestaticapps.net")
+        var allowedOrigins = builder.Configuration["AllowedOrigins"]?.Split(",")
+                             ?? new[] { "http://localhost:4200" };
+
+        policy
+            .WithOrigins(allowedOrigins)
             .AllowAnyHeader()
             .AllowAnyMethod();
     });

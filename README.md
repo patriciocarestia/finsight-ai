@@ -18,13 +18,13 @@
 
 ![Dashboard](./docs/dashboard.png)
 
-### AI Analysis
-
-![AI Analysis](./docs/analysis.png)
-
 ### Portfolio
 
 ![Portfolio](./docs/portfolio.png)
+
+### AI Analysis
+
+![AI Analysis](./docs/analysis.png)
 
 ---
 

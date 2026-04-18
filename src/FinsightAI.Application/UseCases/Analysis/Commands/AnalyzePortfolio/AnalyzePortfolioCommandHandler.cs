@@ -18,9 +18,10 @@ public class AnalyzePortfolioCommandHandler
         IGeminiClient geminiClient
     )
     {
-        ArgumentNullException.ThrowIfNull(positionRepository, nameof(positionRepository));
-        ArgumentNullException.ThrowIfNull(rateRepository, nameof(rateRepository));
-        ArgumentNullException.ThrowIfNull(geminiClient, nameof(geminiClient));
+        ArgumentNullException.ThrowIfNull(positionRepository);
+        ArgumentNullException.ThrowIfNull(rateRepository);
+        ArgumentNullException.ThrowIfNull(geminiClient);
+
         this.positionRepository = positionRepository;
         this.rateRepository = rateRepository;
         this.geminiClient = geminiClient;
@@ -31,12 +32,13 @@ public class AnalyzePortfolioCommandHandler
         CancellationToken cancellationToken
     )
     {
-        var positions = await this.positionRepository.GetByUserIdAsync(
+        var positions = await positionRepository.GetByUserIdAsync(
             request.UserId,
             cancellationToken
         );
-        var exchangeRates = await this.rateRepository.GetLatestRatesAsync(cancellationToken);
-        var cryptoRates = await this.rateRepository.GetLatestCryptoRatesAsync(cancellationToken);
+
+        var exchangeRates = await rateRepository.GetLatestRatesAsync(cancellationToken);
+        var cryptoRates = await rateRepository.GetLatestCryptoRatesAsync(cancellationToken);
 
         var portfolioJson = JsonSerializer.Serialize(
             positions.Select(p => new
@@ -44,75 +46,65 @@ public class AnalyzePortfolioCommandHandler
                 p.AssetType,
                 p.Amount,
                 p.PurchasePrice,
-                p.PurchaseDate,
-                p.InterestRate,
-                p.MaturityDate,
             })
         );
 
-        var ratesJson = JsonSerializer.Serialize(
-            exchangeRates.Select(r => new
-            {
-                r.Type,
-                r.Buy,
-                r.Sell,
-            })
-        );
+        var ratesJson = JsonSerializer.Serialize(exchangeRates.Select(r => new { r.Type, r.Sell }));
 
         var cryptoJson = JsonSerializer.Serialize(
-            cryptoRates.Select(c => new
-            {
-                c.Symbol,
-                c.PriceUsd,
-                c.PriceArs,
-                c.ChangePercent24h,
-            })
+            cryptoRates.Select(c => new { c.Symbol, c.PriceArs })
         );
 
         var prompt = $"""
-            Sos un asesor financiero argentino en abril 2026. Analizá el portfolio del usuario con criterio profesional y directo.
+            Sos un asesor financiero argentino (abril 2026).
+
+            Analizá el portfolio de forma directa, clara y útil.
 
             Reglas:
-            - Máx. 400 palabras
-            - Tono cercano, sin formalidades ni disclaimers
+            - Máx 300 palabras
+            - Sin introducciones ni disclaimers
             - Usá números concretos (ARS y %)
-            - No expliques conceptos básicos
-            - Sé claro, sintético e inteligente
+            - Sé preciso y sintético
 
-            Formato (respetar exacto):
+            Formato:
 
             ## Resumen
-            1 frase con el estado general del portfolio.
+            1 frase clara del estado general.
 
             ## Performance
-            Para cada posición:
-            - Inversión inicial vs valor actual
-            - Ganancia/pérdida en ARS y %
-            - Breve insight (1 línea)
+            Para cada activo:
+            - inversión vs valor actual
+            - ganancia/pérdida (ARS y %)
+            - insight corto
 
             ## Real vs inflación
             Compará contra inflación (~140%) y dólar blue.
-            Decí si ganó o perdió poder adquisitivo.
 
             ## Recomendaciones
-            3 acciones concretas y directas (sin explicación teórica).
+            3 acciones concretas y directas.
 
             Datos:
 
             Portfolio:
             {portfolioJson}
 
-            Dólar (ARS):
+            Dólar:
             {ratesJson}
 
             Crypto:
             {cryptoJson}
-
-            Objetivo:
-            Detectar qué funciona, qué no, y cómo mejorar el rendimiento real del portfolio.
             """;
 
-        var analysis = await this.geminiClient.GenerateContentAsync(prompt, cancellationToken);
+        string analysis;
+
+        try
+        {
+            analysis = await geminiClient.GenerateContentAsync(prompt, cancellationToken);
+        }
+        catch
+        {
+            analysis = "No se pudo generar el análisis en este momento. Probá nuevamente.";
+        }
 
         return new AnalysisResponse { Analysis = analysis, GeneratedAt = DateTime.UtcNow };
     }

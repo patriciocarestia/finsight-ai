@@ -101,9 +101,11 @@ public class AnalyzePortfolioCommandHandler
         {
             analysis = await geminiClient.GenerateContentAsync(prompt, cancellationToken);
         }
-        catch
+        catch (Exception ex)
         {
-            analysis = "No se pudo generar el análisis en este momento. Probá nuevamente.";
+            Console.WriteLine(ex);
+
+            analysis = "No se pudo generar el análisis en este momento.";
         }
 
         return new AnalysisResponse { Analysis = analysis, GeneratedAt = DateTime.UtcNow };

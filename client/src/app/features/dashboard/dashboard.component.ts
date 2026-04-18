@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { AsyncPipe, DecimalPipe, DatePipe } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
@@ -13,6 +13,7 @@ import {
   selectLastFetched,
 } from '../../store/rates/rates.selectors';
 import { ExchangeRate } from '../../store/rates/rates.model';
+import { ThemeService } from '../../core/services/theme.service';
 
 const RATE_LABELS: Record<string, string> = {
   oficial: 'Dólar Oficial',
@@ -24,17 +25,12 @@ const RATE_LABELS: Record<string, string> = {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [
-    AsyncPipe,
-    DecimalPipe,
-    DatePipe,
-    RateCardComponent,
-    BaseChartDirective,
-  ],
+  imports: [AsyncPipe, DecimalPipe, DatePipe, RateCardComponent, BaseChartDirective],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   private readonly store = inject(Store);
+  private readonly theme = inject(ThemeService);
 
   readonly exchangeRates$ = this.store.select(selectExchangeRates);
   readonly cryptoRates$ = this.store.select(selectCryptoRates);
@@ -47,45 +43,50 @@ export class DashboardComponent implements OnInit, OnDestroy {
   selectedType = 'blue';
   private refreshInterval?: ReturnType<typeof setInterval>;
 
-  readonly chartOptions: ChartConfiguration['options'] = {
-    responsive: true,
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        mode: 'index',
-        intersect: false,
-        backgroundColor: 'rgba(9,9,11,0.9)',
-        borderColor: 'rgba(255,255,255,0.08)',
-        borderWidth: 1,
-        titleColor: '#94a3b8',
-        bodyColor: '#f8fafc',
-        padding: 10,
-        displayColors: false,
+  readonly chartOptions = computed((): ChartConfiguration['options'] => {
+    const dark = this.theme.isDark();
+    const grid = dark ? 'rgba(255,255,255,0.03)' : 'rgba(15,23,42,0.07)';
+    const tick = dark ? '#475569' : '#64748b';
+    const tooltipBg = dark ? 'rgba(9,9,11,0.92)' : 'rgba(15,23,42,0.88)';
+    const tooltipBody = dark ? '#f8fafc' : '#f8fafc';
+
+    return {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          mode: 'index',
+          intersect: false,
+          backgroundColor: tooltipBg,
+          borderColor: dark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.15)',
+          borderWidth: 1,
+          titleColor: '#94a3b8',
+          bodyColor: tooltipBody,
+          padding: 10,
+          displayColors: false,
+        },
       },
-    },
-    scales: {
-      x: {
-        ticks: { color: '#475569', maxTicksLimit: 8, font: { size: 11 } },
-        grid: { color: 'rgba(255,255,255,0.03)' },
-        border: { color: 'rgba(255,255,255,0.04)' },
+      scales: {
+        x: {
+          ticks: { color: tick, maxTicksLimit: 8, font: { size: 11 } },
+          grid: { color: grid },
+          border: { color: grid },
+        },
+        y: {
+          beginAtZero: false,
+          grace: '12%',
+          ticks: { color: tick, font: { size: 11 } },
+          grid: { color: grid },
+          border: { color: grid },
+        },
       },
-      y: {
-        beginAtZero: false,
-        grace: '12%',
-        ticks: { color: '#475569', font: { size: 11 } },
-        grid: { color: 'rgba(255,255,255,0.03)' },
-        border: { color: 'rgba(255,255,255,0.04)' },
-      },
-    },
-  };
+    };
+  });
 
   ngOnInit() {
     this.store.dispatch(loadRates());
     this.loadHistory();
-    this.refreshInterval = setInterval(
-      () => this.store.dispatch(loadRates()),
-      5 * 60 * 1000,
-    );
+    this.refreshInterval = setInterval(() => this.store.dispatch(loadRates()), 5 * 60 * 1000);
   }
 
   ngOnDestroy() {
@@ -113,8 +114,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   buildChartData(history: ExchangeRate[]): ChartConfiguration['data'] {
     const sorted = [...history].sort(
-      (a, b) =>
-        new Date(a.recordedAt).getTime() - new Date(b.recordedAt).getTime(),
+      (a, b) => new Date(a.recordedAt).getTime() - new Date(b.recordedAt).getTime(),
     );
 
     const byDay = new Map<string, number>();
@@ -130,23 +130,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     return {
       labels: entries.map(([day]) => day),
-      datasets: [
-        {
-          data: entries.map(([, sell]) => sell),
-          borderColor: '#6366f1',
-          backgroundColor: 'rgba(99, 102, 241, 0.07)',
-          fill: true,
-          tension: 0.4,
-          pointRadius: 0,
-          borderWidth: 1.5,
-        },
-      ],
+      datasets: [{
+        data: entries.map(([, sell]) => sell),
+        borderColor: '#6366f1',
+        backgroundColor: 'rgba(99, 102, 241, 0.07)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 0,
+        borderWidth: 1.5,
+      }],
     };
   }
 
   private loadHistory() {
-    this.store.dispatch(
-      loadHistory({ rateType: this.selectedType, days: this.selectedDays() }),
-    );
+    this.store.dispatch(loadHistory({ rateType: this.selectedType, days: this.selectedDays() }));
   }
 }

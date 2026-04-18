@@ -12,6 +12,13 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+  <script>
+    try {
+      const t = localStorage.getItem('finsight-theme');
+      const light = t === 'light' || (!t && !window.matchMedia('(prefers-color-scheme: dark)').matches);
+      if (light) document.documentElement.classList.add('light');
+    } catch {}
+  </script>
   </head>
   <body>
     <app-root></app-root>

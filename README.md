@@ -2,10 +2,10 @@
 
 > A real-time financial dashboard that tracks Argentine exchange rates and crypto, and calculates actual portfolio returns adjusted for inflation — solving a real problem in a multi-currency economy.
 
-[![CI](https://github.com/patriciocarestia/finsight-ai/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/patriciocarestia/finsight-ai/actions)
-![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)
+[.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)
 ![Angular](https://img.shields.io/badge/Angular-21-DD0031?logo=angular)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript)
+[![API Build](https://github.com/patriciocarestia/finsight-ai/actions/workflows/backend.yml/badge.svg)](https://github.com/patriciocarestia/finsight-ai/actions/workflows/backend.yml)
+[![Web Build](https://github.com/patriciocarestia/finsight-ai/actions/workflows/frontend.yml/badge.svg)](https://github.com/patriciocarestia/finsight-ai/actions/workflows/frontend.yml)!
 ![SQLite](https://img.shields.io/badge/SQLite-003B57?logo=sqlite)
 
 **[Live Demo](https://calm-meadow-03b318b10.7.azurestaticapps.net/)** · **[API Docs](https://finsight-ai-api.azurewebsites.net/swagger)**

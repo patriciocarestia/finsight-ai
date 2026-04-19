@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { AuthService } from '../../core/services/auth.service';
 import * as AuthActions from './auth.actions';
 
@@ -56,5 +56,31 @@ export class AuthEffects {
         ),
       ),
     ),
+  );
+
+  persistSession$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(AuthActions.loginSuccess, AuthActions.registerSuccess),
+        tap(({ token, email, expiresAt }) => {
+          localStorage.setItem('auth_token', token);
+          localStorage.setItem('auth_email', email);
+          localStorage.setItem('auth_expires_at', expiresAt);
+        }),
+      ),
+    { dispatch: false },
+  );
+
+  clearSession$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(AuthActions.logout),
+        tap(() => {
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('auth_email');
+          localStorage.removeItem('auth_expires_at');
+        }),
+      ),
+    { dispatch: false },
   );
 }

@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text.Json;
+using FinsightAI.Application.Exceptions;
 
 namespace FinsightAI.API.Middleware;
 
@@ -37,6 +38,7 @@ public class ExceptionHandlingMiddleware
             KeyNotFoundException => (HttpStatusCode.NotFound, exception.Message),
             UnauthorizedAccessException => (HttpStatusCode.Forbidden, exception.Message),
             InvalidOperationException => (HttpStatusCode.Conflict, exception.Message),
+            GeminiException => (HttpStatusCode.BadGateway, exception.Message),
             _ => (HttpStatusCode.InternalServerError, "An unexpected error occurred."),
         };
 

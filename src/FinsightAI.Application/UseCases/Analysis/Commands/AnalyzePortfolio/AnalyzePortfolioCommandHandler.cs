@@ -40,73 +40,84 @@ public class AnalyzePortfolioCommandHandler
         var exchangeRates = await rateRepository.GetLatestRatesAsync(cancellationToken);
         var cryptoRates = await rateRepository.GetLatestCryptoRatesAsync(cancellationToken);
 
-        var portfolioJson = JsonSerializer.Serialize(
-            positions.Select(p => new
-            {
-                p.AssetType,
-                p.Amount,
-                p.PurchasePrice,
-            })
-        );
-
         var ratesJson = JsonSerializer.Serialize(exchangeRates.Select(r => new { r.Type, r.Sell }));
 
         var cryptoJson = JsonSerializer.Serialize(
             cryptoRates.Select(c => new { c.Symbol, c.PriceArs })
         );
 
+        var today = DateTime.UtcNow.Date;
+
+        var portfolioData = positions.Select(p => new
+        {
+            p.AssetType,
+            p.Amount,
+            p.PurchasePrice,
+            p.PurchaseDate,
+            DaysSincePurchase = (today - p.PurchaseDate.Date).Days,
+        });
+
+        var portfolioJson = JsonSerializer.Serialize(portfolioData);
+
         var prompt = $"""
-            Sos un asesor financiero argentino (abril 2026).
+            Sos un asesor financiero argentino.
 
-            Analizá el portfolio de forma directa, clara y útil.
+            Contexto:
+            - Fecha actual (UTC): {today:yyyy-MM-dd}
+            - Cada posición incluye "DaysSincePurchase" (días desde la compra)
 
-            Reglas:
+            Reglas de análisis:
+            - Separar SIEMPRE rendimiento nominal vs real
+            - Si DaysSincePurchase < 30:
+            → NO evaluar contra inflación
+            → NO asumir variaciones de mercado
+            → Solo mostrar estado nominal actual
+            - Solo evaluar rendimiento real si pasaron suficientes días (>= 30)
+            - No inventar cambios de precio si no están explícitos en los datos
+
+            Reglas de respuesta:
             - Máx 300 palabras
-            - Sin introducciones ni disclaimers
-            - Usá números concretos (ARS y %)
-            - Sé preciso y sintético
+            - Tono directo, sin relleno
+            - Usar números concretos (ARS y %)
+            - No explicar conceptos básicos
 
             Formato:
 
             ## Resumen
-            1 frase clara del estado general.
+            1 frase clara del estado general
 
             ## Performance
-            Para cada activo:
-            - inversión vs valor actual
-            - ganancia/pérdida (ARS y %)
-            - insight corto
+            Por cada posición:
+            - Inversión vs valor actual
+            - Ganancia/pérdida nominal (%)
+            - Insight corto
 
             ## Real vs inflación
-            Compará contra inflación (~140%) y dólar blue.
+            - Solo si DaysSincePurchase >= 30
+            - Si no: aclarar que no aplica aún
 
             ## Recomendaciones
-            3 acciones concretas y directas.
+            3 acciones concretas
 
             Datos:
 
             Portfolio:
             {portfolioJson}
 
-            Dólar:
+            Dólar (ARS):
             {ratesJson}
 
             Crypto:
             {cryptoJson}
+
+            Inflación anual estimada: 140%
+
+            Objetivo:
+            Evaluar correctamente según el tiempo real de cada inversión.
+            No asumir escenarios históricos si la inversión es reciente.
             """;
 
-        string analysis;
-
-        try
-        {
-            analysis = await geminiClient.GenerateContentAsync(prompt, cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
-
-            analysis = "No se pudo generar el análisis en este momento.";
-        }
+        var analysis = await geminiClient.GenerateContentAsync(prompt, cancellationToken);
 
         return new AnalysisResponse { Analysis = analysis, GeneratedAt = DateTime.UtcNow };
     }

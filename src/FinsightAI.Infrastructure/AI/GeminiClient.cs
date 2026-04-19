@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using FinsightAI.Application.Exceptions;
 using FinsightAI.Application.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -51,7 +52,9 @@ public class GeminiClient : IGeminiClient
                 return text;
         }
 
-        return "El análisis no está disponible en este momento. Por favor intentá más tarde.";
+        throw new GeminiException(
+            "No se pudo generar el análisis. El servicio de IA no está disponible en este momento."
+        );
     }
 
     private async Task<string?> TryWithRetriesAsync(

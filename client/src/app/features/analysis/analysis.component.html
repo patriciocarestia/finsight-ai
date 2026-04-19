@@ -52,7 +52,7 @@
     </div>
   }
 
-  @if (!(analysis$ | async) && !(loading$ | async)) {
+  @if (!(analysis$ | async) && !(loading$ | async) && !(error$ | async)) {
     <div class="card flex flex-col items-center justify-center py-20 text-center">
       <div class="icon-box w-14 h-14 rounded-2xl text-blue-400 text-2xl mb-5">✦</div>
       <h2 class="font-display font-semibold text-white text-lg mb-2">Tu analista financiero IA</h2>

@@ -1,4 +1,5 @@
 import { Injectable, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
@@ -9,6 +10,7 @@ import * as AuthActions from './auth.actions';
 export class AuthEffects {
   private readonly actions$ = inject(Actions);
   private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
   login$ = createEffect(() =>
     this.actions$.pipe(
@@ -79,6 +81,7 @@ export class AuthEffects {
           localStorage.removeItem('auth_token');
           localStorage.removeItem('auth_email');
           localStorage.removeItem('auth_expires_at');
+          this.router.navigate(['/dashboard']);
         }),
       ),
     { dispatch: false },

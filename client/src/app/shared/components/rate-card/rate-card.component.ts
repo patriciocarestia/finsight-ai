@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 
 @Component({
@@ -7,8 +7,8 @@ import { DecimalPipe } from '@angular/common';
   templateUrl: './rate-card.component.html',
 })
 export class RateCardComponent {
-  @Input() label = '';
-  @Input() buy = 0;
-  @Input() sell = 0;
-  @Input() change = 0;
+  readonly label = input('');
+  readonly buy = input(0);
+  readonly sell = input(0);
+  readonly change = input(0);
 }

@@ -133,7 +133,10 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-app.UseHangfireDashboard("/hangfire");
+app.UseHangfireDashboard(
+    "/hangfire",
+    new DashboardOptions { Authorization = [new HangfireLocalFilter()] }
+);
 
 RecurringJob.AddOrUpdate<RatesFetcherService>(
     "fetch-rates",

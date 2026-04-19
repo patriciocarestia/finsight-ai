@@ -11,7 +11,6 @@ public class Position
     public DateTime PurchaseDate { get; set; }
     public string? Notes { get; set; }
 
-    // For Plazo Fijo
     public decimal? InterestRate { get; set; }
     public DateTime? MaturityDate { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

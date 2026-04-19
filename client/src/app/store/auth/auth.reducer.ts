@@ -10,6 +10,14 @@ import {
   registerSuccess,
 } from './auth.actions';
 
+const emptyState: AuthState = {
+  token: null,
+  email: null,
+  expiresAt: null,
+  loading: false,
+  error: null,
+};
+
 function loadAuthFromStorage(): AuthState {
   try {
     const token = localStorage.getItem('auth_token');
@@ -21,7 +29,7 @@ function loadAuthFromStorage(): AuthState {
   } catch (error) {
     console.warn('[Auth] Storage error:', error);
   }
-  return { token: null, email: null, expiresAt: null, loading: false, error: null };
+  return emptyState;
 }
 
 const initialState: AuthState = loadAuthFromStorage();
@@ -73,6 +81,6 @@ export const authFeature = createFeature({
       error,
     })),
 
-    on(logout, () => ({ ...initialState })),
+    on(logout, () => emptyState),
   ),
 });

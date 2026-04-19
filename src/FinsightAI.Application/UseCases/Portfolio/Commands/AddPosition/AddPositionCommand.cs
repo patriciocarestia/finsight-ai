@@ -24,6 +24,5 @@ public class AddPositionCommand : IRequest<PositionResponse>
     public decimal? InterestRate { get; set; }
     public DateTime? MaturityDate { get; set; }
 
-    // Set by middleware from JWT, not from request body
     public int UserId { get; set; }
 }

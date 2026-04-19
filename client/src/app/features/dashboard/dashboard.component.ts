@@ -1,8 +1,10 @@
-import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { AsyncPipe, DecimalPipe, DatePipe } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
+import { timer } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RateCardComponent } from '../../shared/components/rate-card/rate-card.component';
 import { loadRates, loadHistory } from '../../store/rates/rates.actions';
 import {
@@ -28,7 +30,7 @@ const RATE_LABELS: Record<string, string> = {
   imports: [AsyncPipe, DecimalPipe, DatePipe, RateCardComponent, BaseChartDirective],
   templateUrl: './dashboard.component.html',
 })
-export class DashboardComponent implements OnInit, OnDestroy {
+export class DashboardComponent implements OnInit {
   private readonly store = inject(Store);
   private readonly theme = inject(ThemeService);
 
@@ -41,7 +43,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   readonly dayOptions = [7, 30, 90];
   readonly selectedDays = signal(30);
   selectedType = 'blue';
-  private refreshInterval?: ReturnType<typeof setInterval>;
 
   readonly chartOptions = computed((): ChartConfiguration['options'] => {
     const dark = this.theme.isDark();
@@ -83,14 +84,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
     };
   });
 
+  constructor() {
+    timer(5 * 60 * 1000, 5 * 60 * 1000)
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.store.dispatch(loadRates()));
+  }
+
   ngOnInit() {
     this.store.dispatch(loadRates());
     this.loadHistory();
-    this.refreshInterval = setInterval(() => this.store.dispatch(loadRates()), 5 * 60 * 1000);
-  }
-
-  ngOnDestroy() {
-    if (this.refreshInterval) clearInterval(this.refreshInterval);
   }
 
   onRefresh() {

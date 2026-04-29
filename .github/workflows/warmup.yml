@@ -1,0 +1,12 @@
+name: API Warmup
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping health endpoint
+        run: curl -sf https://finsight-ai-api.azurewebsites.net/api/health || echo "Warmup ping failed"

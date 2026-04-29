@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'src/**'
+      - 'finsight-ai.sln'
+      - 'nuget.config'
       - '.github/workflows/backend.yml'
 
 jobs:

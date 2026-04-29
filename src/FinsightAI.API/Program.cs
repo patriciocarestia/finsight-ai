@@ -96,8 +96,10 @@ builder.Services.AddCors(options =>
             var origins =
                 builder
                     .Configuration["AllowedOrigins"]
-                    ?.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                ?? new[] { "http://localhost:4200" };
+                    ?.Split(
+                        ',',
+                        StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
+                    ) ?? new[] { "http://localhost:4200" };
 
             policy.WithOrigins(origins).AllowAnyHeader().AllowAnyMethod().AllowCredentials();
         }
@@ -143,5 +145,7 @@ RecurringJob.AddOrUpdate<RatesFetcherService>(
     service => service.FetchAndStoreAllRatesAsync(),
     "*/15 * * * *"
 );
+
+app.MapGet("/api/health", () => Results.Ok(new { status = "ok" })).AllowAnonymous();
 
 app.Run();

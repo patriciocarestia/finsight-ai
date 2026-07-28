@@ -36,7 +36,7 @@ export class AppComponent implements OnInit {
         const title = (snapshot.data['title'] as string) ?? 'FinSight AI';
         const description =
           (snapshot.data['description'] as string) ??
-          'Cotización del dólar y criptomonedas en Argentina en tiempo real.';
+          'Cotización del dólar y criptomonedas en Argentina hoy, en vivo.';
         this.seo.update({ title, description, path: this.router.url });
       });
   }

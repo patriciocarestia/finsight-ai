@@ -305,16 +305,15 @@ body {
   pointer-events: none;
 }
 
-.card-hero-blue::before {
-  background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.14), transparent 60%);
-}
-
-.card-hero-oficial::before {
-  background: radial-gradient(circle at top right, rgba(34, 197, 94, 0.14), transparent 60%);
-}
-
+.card-hero-blue::before,
+.card-hero-oficial::before,
 .card-hero-btc::before {
-  background: radial-gradient(circle at top right, rgba(247, 147, 26, 0.12), transparent 60%);
+  background: radial-gradient(
+    circle at top right,
+    rgba(99, 102, 241, 0.14),
+    rgba(139, 92, 246, 0.06) 45%,
+    transparent 70%
+  );
 }
 
 .hero-value {

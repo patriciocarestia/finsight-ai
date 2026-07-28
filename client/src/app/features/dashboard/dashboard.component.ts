@@ -158,6 +158,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
         question: '¿A cuánto está el dólar blue hoy?',
         answer: `El dólar blue hoy cotiza a $${this.formatNumber(blue.buy)} para la compra y $${this.formatNumber(blue.sell)} para la venta.`,
       });
+      items.push({
+        question: '¿El dólar blue es lo mismo que el dólar paralelo o informal?',
+        answer:
+          'Sí, dólar blue, dólar paralelo y dólar informal son la misma cotización: el precio del dólar fuera del circuito oficial.',
+      });
     }
     if (oficial) {
       items.push({

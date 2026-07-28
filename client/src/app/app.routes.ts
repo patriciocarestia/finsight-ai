@@ -7,9 +7,9 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent),
     data: {
-      title: 'FinSight AI — Dólar Blue, Oficial y Cripto en Argentina',
+      title: 'Dólar Blue, Oficial y Cripto Hoy en Argentina | FinSight AI',
       description:
-        'Cotización del dólar blue, oficial, MEP, CCL y cripto en Argentina en tiempo real. Conversor, histórico y análisis con IA.',
+        'Dólar blue, oficial, MEP, CCL y cripto hoy en Argentina, actualizado en vivo. Conversor, histórico y análisis con IA.',
     },
   },
   {

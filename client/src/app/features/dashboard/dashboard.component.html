@@ -1,28 +1,61 @@
 <div class="space-y-8">
-  <div class="flex items-start justify-between gap-4">
+  <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
     <div>
-      <h1 class="page-title">Dashboard</h1>
-      <p class="page-subtitle">
+      <h1 class="page-title">Cotizaciones en Argentina</h1>
+      <p class="page-subtitle flex items-center gap-1.5">
+        @if (!(loading$ | async)) {
+          <span class="live-dot"></span>
+        }
         @if (lastFetched$ | async; as ts) {
           Actualizado a las {{ ts | date: "HH:mm" }}
         } @else {
-          Cotizaciones en tiempo real
+          Dólar blue, oficial y criptomonedas en tiempo real
         }
       </p>
     </div>
-    <button
-      (click)="onRefresh()"
-      class="btn-secondary flex items-center gap-2 text-sm shrink-0"
-      [disabled]="loading$ | async"
-    >
-      <span [class]="(loading$ | async) ? 'animate-spin' : ''">↻</span>
-      Actualizar
-    </button>
+    <div class="flex items-center gap-2 shrink-0">
+      <button
+        (click)="onShare()"
+        class="btn-secondary flex items-center gap-2 text-sm relative"
+        title="Compartir el dólar blue, oficial y bitcoin"
+        aria-label="Compartir cotizaciones de dólar blue, oficial y bitcoin"
+      >
+        <span aria-hidden="true">⤴</span>
+        <span class="hidden sm:inline">Compartir cotizaciones</span>
+        <span class="sm:hidden">Compartir</span>
+        @if (shareCopied()) {
+          <span
+            class="absolute -bottom-8 right-0 text-[11px] bg-slate-800 text-white px-2 py-1 rounded-lg whitespace-nowrap z-10"
+            role="status"
+          >
+            ¡Cotizaciones copiadas!
+          </span>
+        }
+      </button>
+      <button
+        (click)="onRefresh()"
+        class="btn-secondary flex items-center gap-2 text-sm"
+        [disabled]="loading$ | async"
+        aria-label="Actualizar cotizaciones"
+      >
+        <span [class]="(loading$ | async) ? 'animate-spin' : ''" aria-hidden="true">↻</span>
+        Actualizar
+      </button>
+    </div>
   </div>
 
   @if (loading$ | async) {
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
-      @for (i of [1, 2, 3, 4, 5]; track i) {
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="card card-hero animate-pulse space-y-4">
+          <div class="skeleton h-9 w-9 rounded-xl"></div>
+          <div class="skeleton h-10 w-[75%]"></div>
+          <div class="skeleton h-2 w-[50%]"></div>
+        </div>
+      }
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      @for (i of [1, 2, 3, 4]; track i) {
         <div class="card animate-pulse space-y-3">
           <div class="skeleton h-2 w-[55%]"></div>
           <div class="skeleton h-7 w-[70%]"></div>
@@ -33,62 +66,273 @@
   }
 
   @if (exchangeRates$ | async; as rates) {
+    @if (cryptoRates$ | async; as cryptos) {
+      @if (rates.length > 0 || cryptos.length > 0) {
+        <!-- Headline rates: Dólar Blue, Dólar Oficial, BTC -->
+        <section>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            @if (findRate(rates, "blue"); as blue) {
+              <div class="card card-hero card-hero-blue">
+                <div class="flex items-start justify-between mb-5">
+                  <div class="flex items-center gap-3">
+                    <div class="hero-icon hero-icon-blue w-9 h-9">$</div>
+                    <div>
+                      <p class="font-display font-semibold text-white text-sm leading-tight">Dólar Blue</p>
+                      <p class="text-[11px] text-slate-500 mt-0.5">El más buscado</p>
+                    </div>
+                  </div>
+                  <span class="badge" [class]="blue.changePercent >= 0 ? 'badge-gain' : 'badge-loss'">
+                    {{ blue.changePercent >= 0 ? "↑" : "↓" }}&nbsp;{{
+                      (blue.changePercent < 0 ? -blue.changePercent : blue.changePercent) | number: "1.1-1"
+                    }}%
+                  </span>
+                </div>
+                <div class="hero-value">${{ blue.sell | number: "1.0-0" }}</div>
+                <div class="flex items-center gap-3 mt-3 text-[11px] text-slate-600">
+                  <span
+                    >Compra <span class="text-slate-500">${{ blue.buy | number: "1.0-0" }}</span></span
+                  >
+                  <span class="text-white/10">·</span>
+                  <span
+                    >Venta <span class="text-slate-500">${{ blue.sell | number: "1.0-0" }}</span></span
+                  >
+                </div>
+                @if (gapPercent(rates); as gap) {
+                  <div class="mt-3">
+                    <span class="gap-pill">Brecha vs. oficial {{ gap | number: "1.0-0" }}%</span>
+                  </div>
+                }
+              </div>
+            }
+
+            @if (findRate(rates, "oficial"); as oficial) {
+              <div class="card card-hero card-hero-oficial">
+                <div class="flex items-start justify-between mb-5">
+                  <div class="flex items-center gap-3">
+                    <div class="hero-icon hero-icon-oficial w-9 h-9">$</div>
+                    <div>
+                      <p class="font-display font-semibold text-white text-sm leading-tight">Dólar Oficial</p>
+                      <p class="text-[11px] text-slate-500 mt-0.5">Banco Nación</p>
+                    </div>
+                  </div>
+                  <span class="badge" [class]="oficial.changePercent >= 0 ? 'badge-gain' : 'badge-loss'">
+                    {{ oficial.changePercent >= 0 ? "↑" : "↓" }}&nbsp;{{
+                      (oficial.changePercent < 0 ? -oficial.changePercent : oficial.changePercent) | number: "1.1-1"
+                    }}%
+                  </span>
+                </div>
+                <div class="hero-value">${{ oficial.sell | number: "1.0-0" }}</div>
+                <div class="flex items-center gap-3 mt-3 text-[11px] text-slate-600">
+                  <span
+                    >Compra <span class="text-slate-500">${{ oficial.buy | number: "1.0-0" }}</span></span
+                  >
+                  <span class="text-white/10">·</span>
+                  <span
+                    >Venta <span class="text-slate-500">${{ oficial.sell | number: "1.0-0" }}</span></span
+                  >
+                </div>
+              </div>
+            }
+
+            @if (findCrypto(cryptos, "BTC"); as btc) {
+              <div class="card card-hero card-hero-btc">
+                <div class="flex items-start justify-between mb-5">
+                  <div class="flex items-center gap-3">
+                    <div class="hero-icon hero-icon-btc w-9 h-9">₿</div>
+                    <div>
+                      <p class="font-display font-semibold text-white text-sm leading-tight">Bitcoin</p>
+                      <p class="text-[11px] text-slate-500 mt-0.5">BTC</p>
+                    </div>
+                  </div>
+                  <span class="badge" [class]="btc.changePercent >= 0 ? 'badge-gain' : 'badge-loss'">
+                    {{ btc.changePercent >= 0 ? "↑" : "↓" }}&nbsp;{{
+                      (btc.changePercent < 0 ? -btc.changePercent : btc.changePercent) | number: "1.1-1"
+                    }}%
+                  </span>
+                </div>
+                <div class="hero-value">USD {{ btc.priceUsd | number: "1.0-0" }}</div>
+                <div class="text-slate-500 mt-3 text-sm">ARS {{ btc.priceArs | number: "1.0-0" }}</div>
+              </div>
+            }
+          </div>
+        </section>
+      }
+    }
+  }
+
+  @if (exchangeRates$ | async; as rates) {
     @if (rates.length > 0) {
-      <section>
+      <section class="card">
         <div class="section-header">
-          <h2>Cotizaciones del Dólar</h2>
+          <h2>Conversor rápido</h2>
           <div class="section-divider"></div>
         </div>
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
-          @for (rate of rates; track rate.id) {
-            <app-rate-card
-              [label]="getRateLabel(rate.type)"
-              [buy]="rate.buy"
-              [sell]="rate.sell"
-              [change]="rate.changePercent"
+        <div class="flex flex-wrap items-end gap-3">
+          <div class="flex-1 min-w-[140px]">
+            <label class="label" for="converter-amount">{{
+              converterDirection() === "arsToUsd" ? "Pesos (ARS)" : "Dólares (USD)"
+            }}</label>
+            <input
+              id="converter-amount"
+              type="number"
+              class="input"
+              [value]="converterAmount()"
+              (input)="setConverterAmount($any($event.target).value)"
+              min="0"
             />
-          }
+          </div>
+
+          <button
+            type="button"
+            class="btn-secondary shrink-0 mb-[1px]"
+            (click)="swapConverterDirection()"
+            aria-label="Invertir dirección de la conversión"
+          >
+            ⇄
+          </button>
+
+          <div class="flex-1 min-w-[140px]">
+            <label class="label" for="converter-type">Cotización</label>
+            <select
+              id="converter-type"
+              class="input"
+              [value]="converterType()"
+              (change)="setConverterType($any($event.target).value)"
+            >
+              <option value="blue">Dólar Blue</option>
+              <option value="oficial">Dólar Oficial</option>
+              <option value="mep">Dólar MEP</option>
+              <option value="ccl">Dólar CCL</option>
+              <option value="cripto">Dólar Cripto</option>
+            </select>
+          </div>
+
+          <div class="flex-1 min-w-[160px]">
+            <p class="label">{{ converterDirection() === "arsToUsd" ? "Resultado en USD" : "Resultado en ARS" }}</p>
+            <p class="hero-value !text-2xl" aria-live="polite">
+              @if (convertedValue(rates); as result) {
+                {{ converterDirection() === "arsToUsd" ? "US$" : "$" }}{{ result | number: "1.2-2" }}
+              } @else {
+                —
+              }
+            </p>
+          </div>
         </div>
       </section>
     }
   }
 
-  @if (cryptoRates$ | async; as cryptos) {
-    @if (cryptos.length > 0) {
-      <section>
-        <div class="section-header">
-          <h2>Criptomonedas</h2>
-          <div class="section-divider"></div>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          @for (crypto of cryptos; track crypto.id) {
-            <div class="card">
-              <div class="flex items-start justify-between mb-4">
-                <div class="flex items-center gap-3">
-                  <div class="avatar-box w-9 h-9 rounded-xl text-sm font-bold text-white">
-                    {{ crypto.symbol.charAt(0) }}
-                  </div>
-                  <div>
-                    <p class="font-display font-semibold text-white text-sm leading-tight">
-                      {{ crypto.symbol }}
-                    </p>
-                    <p class="text-[11px] text-slate-500 mt-0.5">Criptomoneda</p>
-                  </div>
+  @if (exchangeRates$ | async; as rates) {
+    @if (cryptoRates$ | async; as cryptos) {
+      @if (otherRates(rates); as restRates) {
+        @if (otherCryptos(cryptos); as restCryptos) {
+          @if (restRates.length > 0 || restCryptos.length > 0) {
+            <section>
+              <div class="section-header">
+                <h2>Otras cotizaciones</h2>
+                <div class="section-divider"></div>
+                <div class="flex gap-1 shrink-0" role="group" aria-label="Formato de visualización">
+                  <button
+                    (click)="setViewMode('cards')"
+                    [class]="viewMode() === 'cards' ? 'day-pill-active' : 'day-pill'"
+                    [attr.aria-pressed]="viewMode() === 'cards'"
+                    aria-label="Ver como tarjetas"
+                  >
+                    ▦
+                  </button>
+                  <button
+                    (click)="setViewMode('table')"
+                    [class]="viewMode() === 'table' ? 'day-pill-active' : 'day-pill'"
+                    [attr.aria-pressed]="viewMode() === 'table'"
+                    aria-label="Ver como tabla"
+                  >
+                    ☰
+                  </button>
                 </div>
-                <span class="badge" [class]="crypto.changePercent >= 0 ? 'badge-gain' : 'badge-loss'">
-                  {{ crypto.changePercent >= 0 ? "↑" : "↓" }}&nbsp;{{
-                    (crypto.changePercent < 0 ? -crypto.changePercent : crypto.changePercent) | number: "1.1-1"
-                  }}%
-                </span>
               </div>
-              <div class="font-display text-[1.6rem] font-bold text-white tracking-tight leading-none">
-                USD {{ crypto.priceUsd | number: "1.0-0" }}
-              </div>
-              <div class="text-slate-500 mt-1.5 text-sm">ARS {{ crypto.priceArs | number: "1.0-0" }}</div>
-            </div>
+
+              @if (viewMode() === "cards") {
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  @for (rate of restRates; track rate.id) {
+                    <app-rate-card
+                      [label]="getRateLabel(rate.type)"
+                      [buy]="rate.buy"
+                      [sell]="rate.sell"
+                      [change]="rate.changePercent"
+                    />
+                  }
+                  @for (crypto of restCryptos; track crypto.id) {
+                    <div class="card">
+                      <div class="flex items-start justify-between mb-4">
+                        <span class="text-[11px] font-medium text-slate-600 uppercase tracking-widest">{{
+                          crypto.symbol
+                        }}</span>
+                        <span class="badge" [class]="crypto.changePercent >= 0 ? 'badge-gain' : 'badge-loss'">
+                          {{ crypto.changePercent >= 0 ? "↑" : "↓" }}&nbsp;{{
+                            (crypto.changePercent < 0 ? -crypto.changePercent : crypto.changePercent) | number: "1.1-1"
+                          }}%
+                        </span>
+                      </div>
+                      <div class="font-display text-[1.6rem] font-bold text-white tracking-tight leading-none mb-3">
+                        USD {{ crypto.priceUsd | number: "1.0-0" }}
+                      </div>
+                      <div class="text-[11px] text-slate-600">
+                        ARS <span class="text-slate-500">{{ crypto.priceArs | number: "1.0-0" }}</span>
+                      </div>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <div class="card overflow-x-auto">
+                  <table class="w-full text-sm">
+                    <thead>
+                      <tr class="table-divider">
+                        <th class="th text-left">Activo</th>
+                        <th class="th text-right">Compra</th>
+                        <th class="th text-right">Venta</th>
+                        <th class="th text-right">Var.</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (rate of restRates; track rate.id) {
+                        <tr class="table-row">
+                          <td class="py-3 text-white font-medium">{{ getRateLabel(rate.type) }}</td>
+                          <td class="py-3 text-right text-slate-400">${{ rate.buy | number: "1.0-0" }}</td>
+                          <td class="py-3 text-right text-slate-400">${{ rate.sell | number: "1.0-0" }}</td>
+                          <td class="py-3 text-right">
+                            <span class="badge" [class]="rate.changePercent >= 0 ? 'badge-gain' : 'badge-loss'">
+                              {{ rate.changePercent >= 0 ? "↑" : "↓" }}&nbsp;{{
+                                (rate.changePercent < 0 ? -rate.changePercent : rate.changePercent) | number: "1.1-1"
+                              }}%
+                            </span>
+                          </td>
+                        </tr>
+                      }
+                      @for (crypto of restCryptos; track crypto.id) {
+                        <tr class="table-row">
+                          <td class="py-3 text-white font-medium">{{ crypto.symbol }}</td>
+                          <td class="py-3 text-right text-slate-400" colspan="1">
+                            USD {{ crypto.priceUsd | number: "1.0-0" }}
+                          </td>
+                          <td class="py-3 text-right text-slate-400">ARS {{ crypto.priceArs | number: "1.0-0" }}</td>
+                          <td class="py-3 text-right">
+                            <span class="badge" [class]="crypto.changePercent >= 0 ? 'badge-gain' : 'badge-loss'">
+                              {{ crypto.changePercent >= 0 ? "↑" : "↓" }}&nbsp;{{
+                                (crypto.changePercent < 0 ? -crypto.changePercent : crypto.changePercent)
+                                  | number: "1.1-1"
+                              }}%
+                            </span>
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              }
+            </section>
           }
-        </div>
-      </section>
+        }
+      }
     }
   }
 
@@ -99,15 +343,23 @@
         <p class="page-subtitle">Evolución del tipo de cambio</p>
       </div>
       <div class="flex items-center gap-2 flex-wrap">
-        <select (change)="onTypeChange($any($event.target).value)" class="input w-auto text-sm py-1.5 px-3">
+        <select
+          (change)="onTypeChange($any($event.target).value)"
+          class="input w-auto text-sm py-1.5 px-3"
+          aria-label="Tipo de dólar del histórico"
+        >
           <option value="blue">Blue</option>
           <option value="oficial">Oficial</option>
           <option value="mep">MEP</option>
           <option value="ccl">CCL</option>
         </select>
-        <div class="flex gap-1">
+        <div class="flex gap-1" role="group" aria-label="Rango de días del histórico">
           @for (d of dayOptions; track d) {
-            <button (click)="onDaysChange(d)" [class]="selectedDays() === d ? 'day-pill-active' : 'day-pill'">
+            <button
+              (click)="onDaysChange(d)"
+              [class]="selectedDays() === d ? 'day-pill-active' : 'day-pill'"
+              [attr.aria-pressed]="selectedDays() === d"
+            >
               {{ d }}d
             </button>
           }
@@ -116,7 +368,7 @@
     </div>
 
     @if (loading$ | async) {
-      <div class="animate-pulse space-y-3 pt-2">
+      <div class="animate-pulse space-y-3 pt-2" aria-hidden="true">
         <div class="flex items-end gap-1 h-64">
           @for (bar of [65, 72, 58, 80, 69, 75, 62, 78, 71, 84, 67, 73]; track $index) {
             <div class="skeleton flex-1 rounded-sm" [style.height.%]="bar"></div>
@@ -141,4 +393,27 @@
       }
     }
   </section>
+
+  @if (exchangeRates$ | async; as rates) {
+    @if (cryptoRates$ | async; as cryptos) {
+      @if (faqItems(rates, cryptos); as faqs) {
+        @if (faqs.length > 0) {
+          <section class="card">
+            <div class="section-header">
+              <h2>Preguntas frecuentes</h2>
+              <div class="section-divider"></div>
+            </div>
+            <div>
+              @for (item of faqs; track item.question) {
+                <details class="faq-item">
+                  <summary class="faq-question">{{ item.question }}</summary>
+                  <p class="faq-answer">{{ item.answer }}</p>
+                </details>
+              }
+            </div>
+          </section>
+        }
+      }
+    }
+  }
 </div>

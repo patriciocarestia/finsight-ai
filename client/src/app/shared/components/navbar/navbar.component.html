@@ -1,15 +1,9 @@
 <nav class="navbar sticky top-0 z-50">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
-    <a routerLink="/dashboard" class="flex items-center gap-2.5 shrink-0">
-      <div
-        class="navbar-logo-icon w-7 h-7 rounded-lg flex items-center justify-center shrink-0 text-white text-sm font-bold"
-      >
-        ▲
-      </div>
+    <a routerLink="/" class="flex items-center gap-2.5 shrink-0">
       <span class="font-display font-semibold text-[15px] tracking-tight text-white">
         FinSight<span class="navbar-logo-ai"> AI</span>
       </span>
-      <span class="text-[10px] text-slate-600 tracking-wide">by Patricio Carestia</span>
     </a>
 
     <!-- Desktop nav -->
@@ -19,14 +13,15 @@
         class="p-2 rounded-lg text-slate-500 hover:text-white transition-colors text-sm mr-1"
         (click)="theme.toggle()"
         [title]="theme.isDark() ? 'Modo claro' : 'Modo oscuro'"
+        [attr.aria-label]="theme.isDark() ? 'Modo claro' : 'Modo oscuro'"
       >
         {{ theme.isDark() ? "☀" : "☾" }}
       </button>
 
       <a
-        routerLink="/dashboard"
+        routerLink="/"
         routerLinkActive="nav-active"
-        [routerLinkActiveOptions]="{ exact: false }"
+        [routerLinkActiveOptions]="{ exact: true }"
         class="px-3 py-1.5 rounded-lg text-slate-500 hover:text-white transition-all duration-150 text-sm font-medium"
       >
         Dashboard
@@ -71,6 +66,7 @@
       class="md:hidden p-2 rounded-lg text-slate-500 hover:text-white transition-colors"
       (click)="theme.toggle()"
       [title]="theme.isDark() ? 'Modo claro' : 'Modo oscuro'"
+      [attr.aria-label]="theme.isDark() ? 'Modo claro' : 'Modo oscuro'"
     >
       {{ theme.isDark() ? "☀" : "☾" }}
     </button>
@@ -79,6 +75,8 @@
     <button
       class="md:hidden p-2 rounded-lg text-slate-500 hover:text-white transition-colors text-xl"
       (click)="showMenu.set(!showMenu())"
+      [attr.aria-label]="showMenu() ? 'Cerrar menú' : 'Abrir menú'"
+      [attr.aria-expanded]="showMenu()"
     >
       {{ showMenu() ? "✕" : "☰" }}
     </button>
@@ -88,8 +86,9 @@
   @if (showMenu()) {
     <div class="md:hidden navbar-mobile-bg px-4 pb-4 pt-2 space-y-0.5">
       <a
-        routerLink="/dashboard"
+        routerLink="/"
         routerLinkActive="nav-active"
+        [routerLinkActiveOptions]="{ exact: true }"
         (click)="showMenu.set(false)"
         class="block px-3 py-2.5 rounded-xl text-slate-500 hover:text-white hover:bg-white/[0.04] transition-all text-sm font-medium"
       >

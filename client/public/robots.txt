@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /auth/
+Disallow: /portfolio
+Disallow: /analysis
+
+Sitemap: https://calm-meadow-03b318b10.7.azurestaticapps.net/sitemap.xml

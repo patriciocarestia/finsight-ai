@@ -39,6 +39,14 @@ export class AddPositionComponent {
     maturityDate: [null as string | null],
   });
 
+  constructor() {
+    this.form.controls.assetType.valueChanges.subscribe((assetType) => {
+      if (assetType === 'PLAZO_FIJO') {
+        this.form.controls.amount.setValue(1);
+      }
+    });
+  }
+
   onSubmit() {
     if (this.form.valid) {
       const v = this.form.getRawValue();

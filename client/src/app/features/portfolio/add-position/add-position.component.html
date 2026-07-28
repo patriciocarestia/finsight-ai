@@ -15,13 +15,17 @@
         </select>
       </div>
 
-      <div>
-        <label class="label">Cantidad</label>
-        <input type="number" formControlName="amount" class="input" placeholder="0.00" step="any" />
-      </div>
+      @if (form.get("assetType")?.value !== "PLAZO_FIJO") {
+        <div>
+          <label class="label">Cantidad</label>
+          <input type="number" formControlName="amount" class="input" placeholder="0.00" step="any" />
+        </div>
+      }
 
       <div>
-        <label class="label">Precio de compra (ARS)</label>
+        <label class="label">{{
+          form.get("assetType")?.value === "PLAZO_FIJO" ? "Capital invertido (ARS)" : "Precio de compra (ARS)"
+        }}</label>
         <input type="number" formControlName="purchasePrice" class="input" placeholder="0" />
       </div>
 

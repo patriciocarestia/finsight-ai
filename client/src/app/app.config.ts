@@ -1,6 +1,6 @@
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { provideMarkdown } from 'ngx-markdown';
 import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
@@ -17,12 +17,13 @@ import { AuthEffects } from './store/auth/auth.effects';
 import { RatesEffects } from './store/rates/rates.effects';
 import { PortfolioEffects } from './store/portfolio/portfolio.effects';
 import { AnalysisEffects } from './store/analysis/analysis.effects';
+import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
     provideStore({
       [authFeature.name]: authFeature.reducer,
       [ratesFeature.name]: ratesFeature.reducer,
@@ -32,5 +33,6 @@ export const appConfig: ApplicationConfig = {
     provideEffects([AuthEffects, RatesEffects, PortfolioEffects, AnalysisEffects]),
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
     provideMarkdown(),
+    provideClientHydration(withEventReplay()),
   ],
 };

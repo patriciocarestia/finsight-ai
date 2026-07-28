@@ -1,10 +1,19 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  PLATFORM_ID,
+  inject,
+  signal,
+  computed,
+  effect,
+} from '@angular/core';
 import { Store } from '@ngrx/store';
-import { AsyncPipe, DecimalPipe, DatePipe } from '@angular/common';
+import { AsyncPipe, DecimalPipe, DatePipe, isPlatformBrowser } from '@angular/common';
+import { toSignal, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 import { timer } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RateCardComponent } from '../../shared/components/rate-card/rate-card.component';
 import { loadRates, loadHistory } from '../../store/rates/rates.actions';
 import {
@@ -14,8 +23,9 @@ import {
   selectRatesLoading,
   selectLastFetched,
 } from '../../store/rates/rates.selectors';
-import { ExchangeRate } from '../../store/rates/rates.model';
+import { ExchangeRate, CryptoRate } from '../../store/rates/rates.model';
 import { ThemeService } from '../../core/services/theme.service';
+import { SeoService } from '../../core/services/seo.service';
 
 const RATE_LABELS: Record<string, string> = {
   oficial: 'Dólar Oficial',
@@ -25,14 +35,25 @@ const RATE_LABELS: Record<string, string> = {
   cripto: 'Dólar Cripto',
 };
 
+const RATE_CHART_COLORS: Record<string, string> = {
+  blue: '#3b82f6',
+  oficial: '#22c55e',
+  mep: '#a855f7',
+  ccl: '#ec4899',
+  cripto: '#f59e0b',
+};
+
+const VIEW_MODE_KEY = 'finsight-view-mode';
+
 @Component({
   selector: 'app-dashboard',
   imports: [AsyncPipe, DecimalPipe, DatePipe, RateCardComponent, BaseChartDirective],
   templateUrl: './dashboard.component.html',
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   private readonly store = inject(Store);
   private readonly theme = inject(ThemeService);
+  private readonly seo = inject(SeoService);
 
   readonly exchangeRates$ = this.store.select(selectExchangeRates);
   readonly cryptoRates$ = this.store.select(selectCryptoRates);
@@ -40,15 +61,29 @@ export class DashboardComponent implements OnInit {
   readonly loading$ = this.store.select(selectRatesLoading);
   readonly lastFetched$ = this.store.select(selectLastFetched);
 
+  private readonly exchangeRatesSig = toSignal(this.exchangeRates$, {
+    initialValue: [] as ExchangeRate[],
+  });
+  private readonly cryptoRatesSig = toSignal(this.cryptoRates$, {
+    initialValue: [] as CryptoRate[],
+  });
+
   readonly dayOptions = [7, 30, 90];
   readonly selectedDays = signal(30);
   selectedType = 'blue';
 
+  readonly converterAmount = signal(100);
+  readonly converterType = signal('blue');
+  readonly converterDirection = signal<'arsToUsd' | 'usdToArs'>('arsToUsd');
+
+  readonly viewMode = signal<'cards' | 'table'>(this.readInitialViewMode());
+  readonly shareCopied = signal(false);
+
   readonly chartOptions = computed((): ChartConfiguration['options'] => {
     const dark = this.theme.isDark();
-    const grid = dark ? 'rgba(255,255,255,0.03)' : 'rgba(15,23,42,0.07)';
-    const tick = dark ? '#475569' : '#64748b';
-    const tooltipBg = dark ? 'rgba(9,9,11,0.92)' : 'rgba(15,23,42,0.88)';
+    const grid = dark ? 'rgba(255,255,255,0.04)' : 'rgba(15,23,42,0.07)';
+    const tick = dark ? '#64748b' : '#64748b';
+    const tooltipBg = dark ? 'rgba(24,24,27,0.95)' : 'rgba(15,23,42,0.88)';
     const tooltipBody = dark ? '#f8fafc' : '#f8fafc';
 
     return {
@@ -59,7 +94,7 @@ export class DashboardComponent implements OnInit {
           mode: 'index',
           intersect: false,
           backgroundColor: tooltipBg,
-          borderColor: dark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.15)',
+          borderColor: dark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.15)',
           borderWidth: 1,
           titleColor: '#94a3b8',
           bodyColor: tooltipBody,
@@ -85,14 +120,70 @@ export class DashboardComponent implements OnInit {
   });
 
   constructor() {
-    timer(5 * 60 * 1000, 5 * 60 * 1000)
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => this.store.dispatch(loadRates()));
+    if (isPlatformBrowser(inject(PLATFORM_ID))) {
+      timer(5 * 60 * 1000, 5 * 60 * 1000)
+        .pipe(takeUntilDestroyed())
+        .subscribe(() => this.store.dispatch(loadRates()));
+    }
+
+    effect(() => {
+      const rates = this.exchangeRatesSig();
+      const cryptos = this.cryptoRatesSig();
+      const items = this.faqItems(rates, cryptos);
+      // More than the one static item means real rate data has arrived.
+      if (items.length > 1) {
+        this.seo.setJsonLd('faq', this.buildFaqSchema(items));
+      }
+    });
   }
 
   ngOnInit() {
     this.store.dispatch(loadRates());
     this.loadHistory();
+  }
+
+  ngOnDestroy() {
+    this.seo.removeJsonLd('faq');
+  }
+
+  faqItems(rates: ExchangeRate[], cryptos: CryptoRate[]): { question: string; answer: string }[] {
+    const blue = this.findRate(rates, 'blue');
+    const oficial = this.findRate(rates, 'oficial');
+    const btc = this.findCrypto(cryptos, 'BTC');
+    const gap = this.gapPercent(rates);
+    const items: { question: string; answer: string }[] = [];
+
+    if (blue) {
+      items.push({
+        question: '¿A cuánto está el dólar blue hoy?',
+        answer: `El dólar blue hoy cotiza a $${this.formatNumber(blue.buy)} para la compra y $${this.formatNumber(blue.sell)} para la venta.`,
+      });
+    }
+    if (oficial) {
+      items.push({
+        question: '¿A cuánto está el dólar oficial hoy?',
+        answer: `El dólar oficial hoy cotiza a $${this.formatNumber(oficial.buy)} para la compra y $${this.formatNumber(oficial.sell)} para la venta.`,
+      });
+    }
+    if (gap !== null) {
+      items.push({
+        question: '¿Cuál es la brecha entre el dólar blue y el oficial?',
+        answer: `La brecha cambiaria entre el dólar blue y el dólar oficial es del ${Math.round(gap)}% en este momento.`,
+      });
+    }
+    if (btc) {
+      items.push({
+        question: '¿Cuánto vale el Bitcoin en pesos argentinos?',
+        answer: `1 Bitcoin equivale hoy a $${this.formatNumber(btc.priceArs)} pesos argentinos (USD ${this.formatNumber(btc.priceUsd)}).`,
+      });
+    }
+    items.push({
+      question: '¿Cada cuánto se actualizan las cotizaciones en FinSight AI?',
+      answer:
+        'Las cotizaciones del dólar y las criptomonedas se actualizan automáticamente cada pocos minutos, las 24 horas.',
+    });
+
+    return items;
   }
 
   onRefresh() {
@@ -110,8 +201,98 @@ export class DashboardComponent implements OnInit {
     this.loadHistory();
   }
 
+  setViewMode(mode: 'cards' | 'table') {
+    this.viewMode.set(mode);
+    try {
+      localStorage.setItem(VIEW_MODE_KEY, mode);
+    } catch {
+      /* localStorage unavailable (private mode, etc.) */
+    }
+  }
+
   getRateLabel(type: string): string {
     return RATE_LABELS[type] ?? type;
+  }
+
+  findRate(rates: ExchangeRate[], type: string): ExchangeRate | undefined {
+    return rates.find((r) => r.type === type);
+  }
+
+  otherRates(rates: ExchangeRate[]): ExchangeRate[] {
+    return rates.filter((r) => r.type !== 'blue' && r.type !== 'oficial');
+  }
+
+  gapPercent(rates: ExchangeRate[]): number | null {
+    const blue = this.findRate(rates, 'blue');
+    const oficial = this.findRate(rates, 'oficial');
+    if (!blue || !oficial || !oficial.sell) return null;
+    return ((blue.sell - oficial.sell) / oficial.sell) * 100;
+  }
+
+  findCrypto(cryptos: CryptoRate[], symbol: string): CryptoRate | undefined {
+    return cryptos.find((c) => c.symbol.toUpperCase() === symbol);
+  }
+
+  otherCryptos(cryptos: CryptoRate[]): CryptoRate[] {
+    return cryptos.filter((c) => c.symbol.toUpperCase() !== 'BTC');
+  }
+
+  chartColor(type: string): string {
+    return RATE_CHART_COLORS[type] ?? '#6366f1';
+  }
+
+  setConverterAmount(value: string) {
+    this.converterAmount.set(Number(value) || 0);
+  }
+
+  setConverterType(value: string) {
+    this.converterType.set(value);
+  }
+
+  swapConverterDirection() {
+    this.converterDirection.set(this.converterDirection() === 'arsToUsd' ? 'usdToArs' : 'arsToUsd');
+  }
+
+  convertedValue(rates: ExchangeRate[]): number | null {
+    const rate = this.findRate(rates, this.converterType());
+    if (!rate || !rate.sell) return null;
+
+    return this.converterDirection() === 'arsToUsd'
+      ? this.converterAmount() / rate.sell
+      : this.converterAmount() * rate.sell;
+  }
+
+  async onShare() {
+    const rates = this.exchangeRatesSig();
+    const cryptos = this.cryptoRatesSig();
+    const blue = this.findRate(rates, 'blue');
+    const oficial = this.findRate(rates, 'oficial');
+    const btc = this.findCrypto(cryptos, 'BTC');
+
+    const lines = [
+      '💵 Cotizaciones en Argentina - FinSight AI',
+      blue ? `Dólar Blue: $${this.formatNumber(blue.sell)}` : null,
+      oficial ? `Dólar Oficial: $${this.formatNumber(oficial.sell)}` : null,
+      btc ? `Bitcoin: USD ${this.formatNumber(btc.priceUsd)}` : null,
+    ].filter((line): line is string => !!line);
+
+    const text = lines.join('\n');
+    const url = typeof window !== 'undefined' ? window.location.href : '';
+
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share({ title: 'FinSight AI - Cotizaciones', text, url });
+      } catch {
+        /* user cancelled the share sheet */
+      }
+      return;
+    }
+
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      await navigator.clipboard.writeText(`${text}\n${url}`);
+      this.shareCopied.set(true);
+      setTimeout(() => this.shareCopied.set(false), 2000);
+    }
   }
 
   buildChartData(history: ExchangeRate[]): ChartConfiguration['data'] {
@@ -129,14 +310,15 @@ export class DashboardComponent implements OnInit {
     }
 
     const entries = [...byDay.entries()];
+    const color = this.chartColor(this.selectedType);
 
     return {
       labels: entries.map(([day]) => day),
       datasets: [
         {
           data: entries.map(([, sell]) => sell),
-          borderColor: '#6366f1',
-          backgroundColor: 'rgba(99, 102, 241, 0.07)',
+          borderColor: color,
+          backgroundColor: `${color}12`,
           fill: true,
           tension: 0.4,
           pointRadius: 0,
@@ -144,6 +326,31 @@ export class DashboardComponent implements OnInit {
         },
       ],
     };
+  }
+
+  private formatNumber(n: number): string {
+    return new Intl.NumberFormat('es-AR', { maximumFractionDigits: 0 }).format(n);
+  }
+
+  private buildFaqSchema(items: { question: string; answer: string }[]) {
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: items.map((item) => ({
+        '@type': 'Question',
+        name: item.question,
+        acceptedAnswer: { '@type': 'Answer', text: item.answer },
+      })),
+    };
+  }
+
+  private readInitialViewMode(): 'cards' | 'table' {
+    try {
+      const stored = localStorage.getItem(VIEW_MODE_KEY);
+      return stored === 'table' ? 'table' : 'cards';
+    } catch {
+      return 'cards';
+    }
   }
 
   private loadHistory() {

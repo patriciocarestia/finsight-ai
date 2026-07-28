@@ -9,7 +9,7 @@ export interface SeoData {
 }
 
 const SITE_NAME = 'FinSight AI';
-const BASE_URL = 'https://calm-meadow-03b318b10.7.azurestaticapps.net';
+const BASE_URL = 'https://www.finsightapp.xyz';
 const OG_IMAGE = `${BASE_URL}/og-image.png`;
 
 @Injectable({ providedIn: 'root' })

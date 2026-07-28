@@ -1,5 +1,6 @@
 using FinsightAI.API.Controllers.Base;
 using FinsightAI.Application.DTOs;
+using FinsightAI.Application.UseCases.Rates.Queries.GetCryptoHistory;
 using FinsightAI.Application.UseCases.Rates.Queries.GetLatestRates;
 using FinsightAI.Application.UseCases.Rates.Queries.GetRateHistory;
 using MediatR;
@@ -38,6 +39,24 @@ public class RatesController : BaseController
         Ok(
             await this.Mediator.Send(
                 new GetRateHistoryQuery { Type = type, Days = days },
+                cancellationToken
+            )
+        );
+
+    /// <summary>
+    /// Gets historical crypto price data
+    /// </summary>
+    [HttpGet("crypto-history")]
+    [Produces("application/json", Type = typeof(IEnumerable<CryptoRateResponse>))]
+    [ProducesResponseType(typeof(IEnumerable<CryptoRateResponse>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetCryptoHistoryAsync(
+        [FromQuery] string symbol = "BTC",
+        [FromQuery] int days = 7,
+        CancellationToken cancellationToken = default
+    ) =>
+        Ok(
+            await this.Mediator.Send(
+                new GetCryptoHistoryQuery { Symbol = symbol, Days = days },
                 cancellationToken
             )
         );

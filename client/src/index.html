@@ -39,6 +39,18 @@
         if (light) document.documentElement.classList.add("light");
       } catch {}
     </script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2DRT2KYM8T"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      // Page views are sent manually per Angular route change (see AnalyticsService),
+      // since this is a single-page app and the automatic pageview only fires once.
+      gtag("config", "G-2DRT2KYM8T", { send_page_view: false });
+    </script>
   </head>
   <body>
     <app-root></app-root>

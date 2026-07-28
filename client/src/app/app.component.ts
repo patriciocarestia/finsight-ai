@@ -5,6 +5,7 @@ import { filter, map } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavbarComponent } from './shared/components/navbar/navbar.component';
 import { SeoService } from './core/services/seo.service';
+import { AnalyticsService } from './core/services/analytics.service';
 import { environment } from '../environments/environment';
 
 @Component({
@@ -17,6 +18,7 @@ export class AppComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly seo = inject(SeoService);
+  private readonly analytics = inject(AnalyticsService);
   private readonly destroyRef = inject(DestroyRef);
 
   ngOnInit(): void {
@@ -38,6 +40,7 @@ export class AppComponent implements OnInit {
           (snapshot.data['description'] as string) ??
           'Cotización del dólar y criptomonedas en Argentina hoy, en vivo.';
         this.seo.update({ title, description, path: this.router.url });
+        this.analytics.trackPageView(this.router.url, title);
       });
   }
 }

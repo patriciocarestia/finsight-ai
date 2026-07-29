@@ -17,7 +17,11 @@ import { AuthEffects } from './store/auth/auth.effects';
 import { RatesEffects } from './store/rates/rates.effects';
 import { PortfolioEffects } from './store/portfolio/portfolio.effects';
 import { AnalysisEffects } from './store/analysis/analysis.effects';
-import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+import {
+  provideClientHydration,
+  withEventReplay,
+  withHttpTransferCacheOptions,
+} from '@angular/platform-browser';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -33,6 +37,6 @@ export const appConfig: ApplicationConfig = {
     provideEffects([AuthEffects, RatesEffects, PortfolioEffects, AnalysisEffects]),
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
     provideMarkdown(),
-    provideClientHydration(withEventReplay()),
+    provideClientHydration(withEventReplay(), withHttpTransferCacheOptions({})),
   ],
 };

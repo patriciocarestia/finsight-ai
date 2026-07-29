@@ -121,7 +121,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   constructor() {
     if (isPlatformBrowser(inject(PLATFORM_ID))) {
-      timer(5 * 60 * 1000, 5 * 60 * 1000)
+      // Short initial delay lets hydration settle (and the transfer-cached
+      // first response render) before forcing a real network refresh, so the
+      // build-time snapshot self-corrects within seconds instead of waiting
+      // a full 5 minutes for the first live fetch.
+      timer(3000, 5 * 60 * 1000)
         .pipe(takeUntilDestroyed())
         .subscribe(() => this.store.dispatch(loadRates()));
     }

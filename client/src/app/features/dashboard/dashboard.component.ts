@@ -71,12 +71,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
   readonly loading$ = this.store.select(selectRatesLoading);
   readonly lastFetched$ = this.store.select(selectLastFetched);
 
+  // Single source of truth for the freshness gate: every template block that
+  // needs to know "do we have live-enough data" reads these same signals
+  // instead of subscribing to the store selectors independently, which could
+  // leave sibling @if blocks evaluating the same check to different values
+  // within the same render.
   private readonly exchangeRatesSig = toSignal(this.exchangeRates$, {
     initialValue: [] as ExchangeRate[],
   });
   private readonly cryptoRatesSig = toSignal(this.cryptoRates$, {
     initialValue: [] as CryptoRate[],
   });
+  readonly rates = this.exchangeRatesSig;
+  readonly cryptos = this.cryptoRatesSig;
+  readonly lastFetched = toSignal(this.lastFetched$, { initialValue: null as string | null });
+  readonly fresh = computed(() => this.isFresh(this.lastFetched()));
 
   readonly dayOptions = [7, 30, 90];
   readonly selectedDays = signal(30);

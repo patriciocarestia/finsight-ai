@@ -4,4 +4,4 @@ Disallow: /auth/
 Disallow: /portfolio
 Disallow: /analysis
 
-Sitemap: https://www.finsightapp.xyz/sitemap.xml
+Sitemap: https://www.dolarenvivo.com.ar/sitemap.xml

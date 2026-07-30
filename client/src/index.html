@@ -1,17 +1,27 @@
 <!doctype html>
 <html lang="es">
   <head>
+    <script>
+      (function () {
+        var h = window.location.hostname;
+        if (h === "finsightapp.xyz" || h === "www.finsightapp.xyz") {
+          window.location.replace(
+            "https://www.dolarenvivo.com.ar" + window.location.pathname + window.location.search + window.location.hash,
+          );
+        }
+      })();
+    </script>
     <meta charset="utf-8" />
     <title>Dólar Blue, Oficial y Cripto Hoy en Argentina | FinSight AI</title>
     <meta
       name="description"
       content="Dólar blue, oficial, MEP, CCL y cripto hoy en Argentina, actualizado en vivo. Conversor, histórico y análisis con IA."
     />
-    <meta property="og:image" content="https://www.finsightapp.xyz/og-image.png" />
+    <meta property="og:image" content="https://www.dolarenvivo.com.ar/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content="https://www.finsightapp.xyz/og-image.png" />
+    <meta name="twitter:image" content="https://www.dolarenvivo.com.ar/og-image.png" />
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#111114" />
@@ -27,7 +37,7 @@
         "@context": "https://schema.org",
         "@type": "WebSite",
         "name": "FinSight AI",
-        "url": "https://www.finsightapp.xyz/",
+        "url": "https://www.dolarenvivo.com.ar/",
         "description": "Dólar blue, oficial, MEP, CCL y cripto hoy en Argentina, actualizado en vivo, con conversor, histórico y análisis con IA.",
         "inLanguage": "es-AR"
       }

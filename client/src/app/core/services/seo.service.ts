@@ -9,7 +9,7 @@ export interface SeoData {
 }
 
 const SITE_NAME = 'FinSight AI';
-const BASE_URL = 'https://www.finsightapp.xyz';
+const BASE_URL = 'https://www.dolarenvivo.com.ar';
 const OG_IMAGE = `${BASE_URL}/og-image.png`;
 
 @Injectable({ providedIn: 'root' })

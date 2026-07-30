@@ -135,7 +135,8 @@
             }
           </div>
         </section>
-      } @else {
+      }
+      @if (!((rates.length > 0 || cryptos.length > 0) && isFresh(lastFetched$ | async))) {
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
           @for (i of [1, 2, 3]; track i) {
             <div class="card card-hero animate-pulse space-y-4">

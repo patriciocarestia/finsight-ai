@@ -35,7 +35,7 @@ export class AppComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((snapshot) => {
-        const title = (snapshot.data['title'] as string) ?? 'FinSight AI';
+        const title = (snapshot.data['title'] as string) ?? 'Dólar en Vivo';
         const description =
           (snapshot.data['description'] as string) ??
           'Cotización del dólar y criptomonedas en Argentina hoy, en vivo.';

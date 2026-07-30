@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 
-const STORAGE_KEY = 'finsight-theme';
+const STORAGE_KEY = 'dolarenvivo-theme';
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {

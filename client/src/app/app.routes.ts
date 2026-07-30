@@ -7,7 +7,7 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent),
     data: {
-      title: 'Dólar Blue, Oficial y Cripto Hoy en Argentina | FinSight AI',
+      title: 'Dólar Blue, Oficial y Cripto Hoy en Argentina | Dólar en Vivo',
       description:
         'Dólar blue, oficial, MEP, CCL y cripto hoy en Argentina, actualizado en vivo. Conversor, histórico y análisis con IA.',
     },
@@ -23,7 +23,7 @@ export const routes: Routes = [
       import('./features/portfolio/portfolio.component').then((m) => m.PortfolioComponent),
     canActivate: [authGuard],
     data: {
-      title: 'Mi Portfolio — FinSight AI',
+      title: 'Mi Portfolio — Dólar en Vivo',
       description:
         'Seguí el valor de tu portfolio de dólares y criptomonedas ajustado por inflación.',
     },
@@ -34,7 +34,7 @@ export const routes: Routes = [
       import('./features/analysis/analysis.component').then((m) => m.AnalysisComponent),
     canActivate: [authGuard],
     data: {
-      title: 'Análisis con IA — FinSight AI',
+      title: 'Análisis con IA — Dólar en Vivo',
       description: 'Análisis de tu portfolio y del contexto cambiario argentino generado con IA.',
     },
   },
@@ -43,9 +43,9 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/auth/login/login.component').then((m) => m.LoginComponent),
     data: {
-      title: 'Ingresar — FinSight AI',
+      title: 'Ingresar — Dólar en Vivo',
       description:
-        'Ingresá a tu cuenta de FinSight AI para seguir tu portfolio y acceder al análisis con IA.',
+        'Ingresá a tu cuenta de Dólar en Vivo para seguir tu portfolio y acceder al análisis con IA.',
     },
   },
   {
@@ -53,9 +53,9 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/auth/register/register.component').then((m) => m.RegisterComponent),
     data: {
-      title: 'Crear cuenta — FinSight AI',
+      title: 'Crear cuenta — Dólar en Vivo',
       description:
-        'Creá tu cuenta gratis en FinSight AI y empezá a seguir tu portfolio de dólares y cripto.',
+        'Creá tu cuenta gratis en Dólar en Vivo y empezá a seguir tu portfolio de dólares y cripto.',
     },
   },
   {

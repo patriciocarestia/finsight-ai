@@ -8,7 +8,7 @@ export interface SeoData {
   path?: string;
 }
 
-const SITE_NAME = 'FinSight AI';
+const SITE_NAME = 'Dólar en Vivo';
 const BASE_URL = 'https://www.dolarenvivo.com.ar';
 const OG_IMAGE = `${BASE_URL}/og-image.png`;
 

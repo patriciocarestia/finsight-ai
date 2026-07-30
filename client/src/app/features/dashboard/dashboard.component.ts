@@ -48,7 +48,7 @@ const RATE_CHART_COLORS: Record<string, string> = {
 
 const CRYPTO_HISTORY_TYPES = ['BTC', 'ETH'];
 
-const VIEW_MODE_KEY = 'finsight-view-mode';
+const VIEW_MODE_KEY = 'dolarenvivo-view-mode';
 
 // How old the prerendered/transfer-cached snapshot can be before we hide it
 // behind the skeleton and wait for a real fetch, instead of showing stale numbers.
@@ -209,7 +209,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });
     }
     items.push({
-      question: '¿Cada cuánto se actualizan las cotizaciones en FinSight AI?',
+      question: '¿Cada cuánto se actualizan las cotizaciones en Dólar en Vivo?',
       answer:
         'Las cotizaciones del dólar y las criptomonedas se actualizan automáticamente cada pocos minutos, las 24 horas.',
     });
@@ -306,7 +306,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const btc = this.findCrypto(cryptos, 'BTC');
 
     const lines = [
-      '💵 Cotizaciones en Argentina - FinSight AI',
+      '💵 Cotizaciones en Argentina - Dólar en Vivo',
       blue ? `Dólar Blue: $${this.formatNumber(blue.sell)}` : null,
       oficial ? `Dólar Oficial: $${this.formatNumber(oficial.sell)}` : null,
       btc ? `Bitcoin: USD ${this.formatNumber(btc.priceUsd)}` : null,
@@ -317,7 +317,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     if (typeof navigator !== 'undefined' && navigator.share) {
       try {
-        await navigator.share({ title: 'FinSight AI - Cotizaciones', text, url });
+        await navigator.share({ title: 'Dólar en Vivo - Cotizaciones', text, url });
       } catch {
         /* user cancelled the share sheet */
       }

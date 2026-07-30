@@ -160,4 +160,18 @@ public class RateRepository : IRateRepository
         this.context.CryptoRates.AddRange(rates);
         await this.context.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task DeleteRatesOlderThanAsync(
+        DateTime cutoff,
+        CancellationToken cancellationToken
+    )
+    {
+        await this
+            .context.ExchangeRates.Where(r => r.RecordedAt < cutoff)
+            .ExecuteDeleteAsync(cancellationToken);
+
+        await this
+            .context.CryptoRates.Where(r => r.RecordedAt < cutoff)
+            .ExecuteDeleteAsync(cancellationToken);
+    }
 }

@@ -25,4 +25,5 @@ public interface IRateRepository
         CancellationToken cancellationToken
     );
     Task AddCryptoRatesAsync(IEnumerable<CryptoRate> rates, CancellationToken cancellationToken);
+    Task DeleteRatesOlderThanAsync(DateTime cutoff, CancellationToken cancellationToken);
 }

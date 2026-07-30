@@ -5,6 +5,10 @@ namespace FinsightAI.Infrastructure.Services;
 
 public class RatesFetcherService
 {
+    // The dashboard's longest history range is 90 days; anything older than that
+    // is never read, so we keep a small buffer past it and drop the rest.
+    private const int RetentionDays = 100;
+
     private readonly DolarApiClient dolarApiClient;
     private readonly CoinGeckoClient coinGeckoClient;
     private readonly IRateRepository rateRepository;
@@ -39,5 +43,12 @@ public class RatesFetcherService
 
         if (cryptoRates.Count > 0)
             await this.rateRepository.AddCryptoRatesAsync(cryptoRates, cts.Token);
+    }
+
+    public async Task CleanupOldRatesAsync()
+    {
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+        var cutoff = DateTime.UtcNow.AddDays(-RetentionDays);
+        await this.rateRepository.DeleteRatesOlderThanAsync(cutoff, cts.Token);
     }
 }

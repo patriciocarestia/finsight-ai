@@ -46,28 +46,7 @@
 
   @if (exchangeRates$ | async; as rates) {
     @if (cryptoRates$ | async; as cryptos) {
-      @if ((loading$ | async) && rates.length === 0 && cryptos.length === 0) {
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-          @for (i of [1, 2, 3]; track i) {
-            <div class="card card-hero animate-pulse space-y-4">
-              <div class="skeleton h-9 w-9 rounded-xl"></div>
-              <div class="skeleton h-10 w-[75%]"></div>
-              <div class="skeleton h-2 w-[50%]"></div>
-            </div>
-          }
-        </div>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-          @for (i of [1, 2, 3, 4]; track i) {
-            <div class="card animate-pulse space-y-3">
-              <div class="skeleton h-2 w-[55%]"></div>
-              <div class="skeleton h-7 w-[70%]"></div>
-              <div class="skeleton h-2 w-[80%]"></div>
-            </div>
-          }
-        </div>
-      }
-
-      @if (rates.length > 0 || cryptos.length > 0) {
+      @if ((rates.length > 0 || cryptos.length > 0) && isFresh(lastFetched$ | async)) {
         <!-- Headline rates: Dólar Blue, Dólar Oficial, BTC -->
         <section>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -156,12 +135,31 @@
             }
           </div>
         </section>
+      } @else {
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          @for (i of [1, 2, 3]; track i) {
+            <div class="card card-hero animate-pulse space-y-4">
+              <div class="skeleton h-9 w-9 rounded-xl"></div>
+              <div class="skeleton h-10 w-[75%]"></div>
+              <div class="skeleton h-2 w-[50%]"></div>
+            </div>
+          }
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          @for (i of [1, 2, 3, 4]; track i) {
+            <div class="card animate-pulse space-y-3">
+              <div class="skeleton h-2 w-[55%]"></div>
+              <div class="skeleton h-7 w-[70%]"></div>
+              <div class="skeleton h-2 w-[80%]"></div>
+            </div>
+          }
+        </div>
       }
     }
   }
 
   @if (exchangeRates$ | async; as rates) {
-    @if (rates.length > 0) {
+    @if (rates.length > 0 && isFresh(lastFetched$ | async)) {
       <section class="card">
         <div class="section-header">
           <h2>Conversor rápido</h2>
@@ -226,7 +224,7 @@
     @if (cryptoRates$ | async; as cryptos) {
       @if (otherRates(rates); as restRates) {
         @if (otherCryptos(cryptos); as restCryptos) {
-          @if (restRates.length > 0 || restCryptos.length > 0) {
+          @if ((restRates.length > 0 || restCryptos.length > 0) && isFresh(lastFetched$ | async)) {
             <section>
               <div class="section-header">
                 <h2>Otras cotizaciones</h2>
@@ -397,7 +395,7 @@
   @if (exchangeRates$ | async; as rates) {
     @if (cryptoRates$ | async; as cryptos) {
       @if (faqItems(rates, cryptos); as faqs) {
-        @if (faqs.length > 0) {
+        @if (faqs.length > 0 && isFresh(lastFetched$ | async)) {
           <section class="card">
             <div class="section-header">
               <h2>Preguntas frecuentes</h2>

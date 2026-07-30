@@ -45,6 +45,10 @@ const RATE_CHART_COLORS: Record<string, string> = {
 
 const VIEW_MODE_KEY = 'finsight-view-mode';
 
+// How old the prerendered/transfer-cached snapshot can be before we hide it
+// behind the skeleton and wait for a real fetch, instead of showing stale numbers.
+const STALE_THRESHOLD_MS = 5 * 60 * 1000;
+
 @Component({
   selector: 'app-dashboard',
   imports: [AsyncPipe, DecimalPipe, DatePipe, RateCardComponent, BaseChartDirective],
@@ -221,6 +225,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   getRateLabel(type: string): string {
     return RATE_LABELS[type] ?? type;
+  }
+
+  isFresh(lastFetched: string | null): boolean {
+    if (!lastFetched) return false;
+    return Date.now() - new Date(lastFetched).getTime() < STALE_THRESHOLD_MS;
   }
 
   findRate(rates: ExchangeRate[], type: string): ExchangeRate | undefined {

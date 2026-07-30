@@ -1,18 +1,23 @@
 using FinsightAI.Application.Interfaces;
 using FinsightAI.Application.UseCases.Rates.Queries.GetLatestRates;
 using FinsightAI.Domain.Entities;
+using Microsoft.Extensions.Caching.Memory;
 using Moq;
 
 namespace FinsightAI.Tests.Application.UseCases.Rates;
 
 public class GetLatestRatesQueryHandlerTests
 {
+    private static IMemoryCache CreateCache() => new MemoryCache(new MemoryCacheOptions());
+
     public class The_Constructor : GetLatestRatesQueryHandlerTests
     {
         [Fact]
         public void Should_throw_ArgumentNullException_when_rateRepository_is_null()
         {
-            Assert.Throws<ArgumentNullException>(() => new GetLatestRatesQueryHandler(null!));
+            Assert.Throws<ArgumentNullException>(() =>
+                new GetLatestRatesQueryHandler(null!, CreateCache())
+            );
         }
     }
 
@@ -62,7 +67,7 @@ public class GetLatestRatesQueryHandlerTests
                 .Setup(r => r.GetLatestCryptoRatesAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(cryptoRates);
 
-            var sut = new GetLatestRatesQueryHandler(repository);
+            var sut = new GetLatestRatesQueryHandler(repository, CreateCache());
 
             // Act
             var result = await sut.Handle(new GetLatestRatesQuery(), CancellationToken.None);
@@ -87,7 +92,7 @@ public class GetLatestRatesQueryHandlerTests
                 .Setup(r => r.GetLatestCryptoRatesAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync([]);
 
-            var sut = new GetLatestRatesQueryHandler(repository);
+            var sut = new GetLatestRatesQueryHandler(repository, CreateCache());
 
             // Act
             var result = await sut.Handle(new GetLatestRatesQuery(), CancellationToken.None);

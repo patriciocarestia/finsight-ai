@@ -350,6 +350,8 @@
           <option value="oficial">Oficial</option>
           <option value="mep">MEP</option>
           <option value="ccl">CCL</option>
+          <option value="BTC">Bitcoin</option>
+          <option value="ETH">Ethereum</option>
         </select>
         <div class="flex gap-1" role="group" aria-label="Rango de días del histórico">
           @for (d of dayOptions; track d) {
@@ -365,7 +367,7 @@
       </div>
     </div>
 
-    @if (loading$ | async) {
+    @if (isCryptoType(selectedType) ? cryptoHistoryLoading() : (loading$ | async)) {
       <div class="animate-pulse space-y-3 pt-2" aria-hidden="true">
         <div class="flex items-end gap-1 h-64">
           @for (bar of [65, 72, 58, 80, 69, 75, 62, 78, 71, 84, 67, 73]; track $index) {
@@ -378,6 +380,17 @@
           }
         </div>
       </div>
+    } @else if (isCryptoType(selectedType)) {
+      @if (cryptoHistory(); as history) {
+        @if (history.length > 0) {
+          <canvas baseChart [data]="buildChartData(history)" [options]="chartOptions()" type="line"></canvas>
+        } @else {
+          <div class="flex flex-col items-center justify-center py-16 text-slate-500">
+            <span class="text-3xl mb-3 opacity-40">📊</span>
+            <p class="text-sm">No hay datos disponibles</p>
+          </div>
+        }
+      }
     } @else {
       @if (history$ | async; as history) {
         @if (history.length > 0) {

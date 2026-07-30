@@ -26,6 +26,7 @@ import {
 import { ExchangeRate, CryptoRate } from '../../store/rates/rates.model';
 import { ThemeService } from '../../core/services/theme.service';
 import { SeoService } from '../../core/services/seo.service';
+import { RatesService } from '../../core/services/rates.service';
 
 const RATE_LABELS: Record<string, string> = {
   oficial: 'Dólar Oficial',
@@ -41,7 +42,11 @@ const RATE_CHART_COLORS: Record<string, string> = {
   mep: '#a855f7',
   ccl: '#ec4899',
   cripto: '#f59e0b',
+  BTC: '#f7931a',
+  ETH: '#8b5cf6',
 };
+
+const CRYPTO_HISTORY_TYPES = ['BTC', 'ETH'];
 
 const VIEW_MODE_KEY = 'finsight-view-mode';
 
@@ -58,6 +63,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private readonly store = inject(Store);
   private readonly theme = inject(ThemeService);
   private readonly seo = inject(SeoService);
+  private readonly ratesService = inject(RatesService);
 
   readonly exchangeRates$ = this.store.select(selectExchangeRates);
   readonly cryptoRates$ = this.store.select(selectCryptoRates);
@@ -75,6 +81,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   readonly dayOptions = [7, 30, 90];
   readonly selectedDays = signal(30);
   selectedType = 'blue';
+
+  readonly cryptoHistory = signal<CryptoRate[]>([]);
+  readonly cryptoHistoryLoading = signal(false);
 
   readonly converterAmount = signal(100);
   readonly converterType = signal('blue');
@@ -313,7 +322,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  buildChartData(history: ExchangeRate[]): ChartConfiguration['data'] {
+  buildChartData(history: (ExchangeRate | CryptoRate)[]): ChartConfiguration['data'] {
+    const isCrypto = this.isCryptoType(this.selectedType);
     const sorted = [...history].sort(
       (a, b) => new Date(a.recordedAt).getTime() - new Date(b.recordedAt).getTime(),
     );
@@ -324,7 +334,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         day: '2-digit',
         month: '2-digit',
       });
-      byDay.set(day, r.sell);
+      byDay.set(day, isCrypto ? (r as CryptoRate).priceUsd : (r as ExchangeRate).sell);
     }
 
     const entries = [...byDay.entries()];
@@ -371,7 +381,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   }
 
+  isCryptoType(type: string): boolean {
+    return CRYPTO_HISTORY_TYPES.includes(type);
+  }
+
   private loadHistory() {
+    if (this.isCryptoType(this.selectedType)) {
+      this.cryptoHistoryLoading.set(true);
+      this.ratesService.getCryptoHistory(this.selectedType, this.selectedDays()).subscribe({
+        next: (data) => {
+          this.cryptoHistory.set(data);
+          this.cryptoHistoryLoading.set(false);
+        },
+        error: () => this.cryptoHistoryLoading.set(false),
+      });
+      return;
+    }
+
     this.store.dispatch(loadHistory({ rateType: this.selectedType, days: this.selectedDays() }));
   }
 }

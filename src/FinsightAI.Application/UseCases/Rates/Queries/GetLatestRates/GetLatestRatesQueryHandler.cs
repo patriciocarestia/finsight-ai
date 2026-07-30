@@ -1,23 +1,40 @@
 using FinsightAI.Application.DTOs;
 using FinsightAI.Application.Interfaces;
 using MediatR;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace FinsightAI.Application.UseCases.Rates.Queries.GetLatestRates;
 
 public class GetLatestRatesQueryHandler : IRequestHandler<GetLatestRatesQuery, LatestRatesResponse>
 {
-    private readonly IRateRepository rateRepository;
+    private const string CacheKey = "rates:latest";
+    private static readonly TimeSpan CacheDuration = TimeSpan.FromSeconds(60);
 
-    public GetLatestRatesQueryHandler(IRateRepository rateRepository)
+    private readonly IRateRepository rateRepository;
+    private readonly IMemoryCache cache;
+
+    public GetLatestRatesQueryHandler(IRateRepository rateRepository, IMemoryCache cache)
     {
         ArgumentNullException.ThrowIfNull(rateRepository, nameof(rateRepository));
+        ArgumentNullException.ThrowIfNull(cache, nameof(cache));
         this.rateRepository = rateRepository;
+        this.cache = cache;
     }
 
     public async Task<LatestRatesResponse> Handle(
         GetLatestRatesQuery request,
         CancellationToken cancellationToken
     )
+    {
+        if (this.cache.TryGetValue(CacheKey, out LatestRatesResponse? cached) && cached is not null)
+            return cached;
+
+        var response = await this.BuildResponseAsync(cancellationToken);
+        this.cache.Set(CacheKey, response, CacheDuration);
+        return response;
+    }
+
+    private async Task<LatestRatesResponse> BuildResponseAsync(CancellationToken cancellationToken)
     {
         var exchangeRates = await this.rateRepository.GetLatestRatesAsync(cancellationToken);
         var previousExchangeRates = await this.rateRepository.GetPreviousDayRatesAsync(

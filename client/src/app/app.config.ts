@@ -5,9 +5,9 @@ import { provideMarkdown } from 'ngx-markdown';
 import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
-import { isDevMode } from '@angular/core';
 
 import { routes } from './app.routes';
+import { environment } from '../environments/environment';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { authFeature } from './store/auth/auth.reducer';
 import { ratesFeature } from './store/rates/rates.reducer';
@@ -35,7 +35,10 @@ export const appConfig: ApplicationConfig = {
       [analysisFeature.name]: analysisFeature.reducer,
     }),
     provideEffects([AuthEffects, RatesEffects, PortfolioEffects, AnalysisEffects]),
-    provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
+    // Excluded from production builds entirely (not just muted) so the
+    // devtools instrumentation code doesn't ship in the bundle or run on
+    // every dispatched action for real visitors.
+    ...(environment.production ? [] : [provideStoreDevtools({ maxAge: 25 })]),
     provideMarkdown(),
     provideClientHydration(withEventReplay(), withHttpTransferCacheOptions({})),
   ],

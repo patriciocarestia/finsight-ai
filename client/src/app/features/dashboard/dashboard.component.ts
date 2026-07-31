@@ -156,6 +156,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
     afterNextRender(() => this.hydrated.set(true));
 
     if (isPlatformBrowser(inject(PLATFORM_ID))) {
+      effect(() => {
+        console.log(
+          '[DEBUG hero]',
+          'ratesLen=' + this.rates().length,
+          'hydrated=' + this.hydrated(),
+          'fresh=' + this.fresh(),
+          'lastFetched=' + this.lastFetched(),
+          't=' + Date.now(),
+        );
+      });
+    }
+
+    if (isPlatformBrowser(inject(PLATFORM_ID))) {
       // Short initial delay lets hydration settle (and the transfer-cached
       // first response render) before forcing a real network refresh, so the
       // build-time snapshot self-corrects within seconds instead of waiting

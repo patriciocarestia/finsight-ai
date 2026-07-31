@@ -1,4 +1,4 @@
-# FinSight AI
+# Dólar en Vivo
 
 > A real-time financial dashboard that tracks Argentine exchange rates and crypto, and calculates actual portfolio returns adjusted for inflation — solving a real problem in a multi-currency economy.
 
@@ -8,7 +8,7 @@
 [![Web Build](https://github.com/patriciocarestia/dolar-en-vivo/actions/workflows/frontend.yml/badge.svg)](https://github.com/patriciocarestia/dolar-en-vivo/actions/workflows/frontend.yml)
 ![SQLite](https://img.shields.io/badge/SQLite-003B57?logo=sqlite)
 
-**[Live Demo](https://calm-meadow-03b318b10.7.azurestaticapps.net/)** · **[API Docs](https://finsight-ai-api.azurewebsites.net/swagger)**
+**[Live Demo](https://www.dolarenvivo.com.ar/)** · **[API Docs](https://finsight-ai-api.azurewebsites.net/swagger)**
 
 ---
 
@@ -107,7 +107,7 @@ Argentina has multiple parallel exchange rates (Oficial, Blue, MEP, CCL, Cripto)
 ## Project Structure
 
 ```
-finsight-ai/
+dolar-en-vivo/
 ├── src/
 │   ├── FinsightAI.API/
 │   ├── FinsightAI.Application/

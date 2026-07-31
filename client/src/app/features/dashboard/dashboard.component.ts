@@ -7,7 +7,6 @@ import {
   signal,
   computed,
   effect,
-  afterNextRender,
 } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { AsyncPipe, DecimalPipe, DatePipe, isPlatformBrowser } from '@angular/common';
@@ -87,16 +86,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
   readonly cryptos = this.cryptoRatesSig;
   readonly lastFetched = toSignal(this.lastFetched$, { initialValue: null as string | null });
 
-  // The server always renders as if its own freshly-fetched data is fresh —
-  // "is this stale" only makes sense relative to a real visitor's wall clock,
-  // which the server can't know in advance. If the client's first freshness
-  // check disagreed with that the instant hydration finishes, Angular would
-  // swap the hero @if branch mid-hydration and briefly render both the real
-  // cards and the skeleton at once. Deferring the real check to just after
-  // the first client render lets hydration settle on the server's version
-  // first, then correct it through a normal (non-hydration) view swap.
-  private readonly hydrated = signal(false);
-  readonly fresh = computed(() => !this.hydrated() || this.isFresh(this.lastFetched()));
+  // The client bootstraps with an empty store — even though the server had
+  // real data at prerender time, the client's own toSignal()s start at their
+  // initialValue (empty array / null) until ngOnInit's loadRates() actually
+  // round-trips to the API (roughly 1s in practice). If we gate the hero
+  // section on that data being present, it briefly reads as "not fresh" the
+  // instant hydration finishes, so Angular hides the just-hydrated real
+  // cards and shows the skeleton at the same time it's still tearing them
+  // down. `settled` stays false long enough to cover that real fetch, so we
+  // keep trusting the server's version until the client has actually caught
+  // up, instead of judging it against data we know isn't loaded yet.
+  private readonly settled = signal(false);
+  readonly fresh = computed(() => !this.settled() || this.isFresh(this.lastFetched()));
 
   readonly dayOptions = [7, 30, 90];
   readonly selectedDays = signal(30);
@@ -153,22 +154,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
   });
 
   constructor() {
-    afterNextRender(() => this.hydrated.set(true));
-
     if (isPlatformBrowser(inject(PLATFORM_ID))) {
-      effect(() => {
-        console.log(
-          '[DEBUG hero]',
-          'ratesLen=' + this.rates().length,
-          'hydrated=' + this.hydrated(),
-          'fresh=' + this.fresh(),
-          'lastFetched=' + this.lastFetched(),
-          't=' + Date.now(),
-        );
-      });
-    }
+      // 1.5s comfortably covers the real round-trip ngOnInit's loadRates()
+      // needs to resolve (~1s in practice), so `settled` only flips once the
+      // client has actually had a chance to catch up with the server.
+      timer(1500)
+        .pipe(takeUntilDestroyed())
+        .subscribe(() => this.settled.set(true));
 
-    if (isPlatformBrowser(inject(PLATFORM_ID))) {
       // Short initial delay lets hydration settle (and the transfer-cached
       // first response render) before forcing a real network refresh, so the
       // build-time snapshot self-corrects within seconds instead of waiting

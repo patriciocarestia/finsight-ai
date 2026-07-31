@@ -47,7 +47,7 @@
   @let rates = this.rates();
   @let cryptos = this.cryptos();
   @let fresh = this.fresh();
-  @let hasHeroData = rates.length > 0 && fresh;
+  @let hasHeroData = fresh;
 
   @if (hasHeroData) {
     <!-- Headline rates: Dólar Blue, Dólar Oficial -->
@@ -139,7 +139,7 @@
     </div>
   }
 
-  @if (rates.length > 0 && fresh) {
+  @if (fresh) {
     <section class="card">
       <div class="section-header">
         <h2>Conversor rápido</h2>
@@ -201,7 +201,7 @@
 
   @let restRates = otherRates(rates);
   @let restCryptos = cryptos;
-  @if ((restRates.length > 0 || restCryptos.length > 0) && fresh) {
+  @if (fresh) {
     <section>
       <div class="section-header">
         <h2>Otras cotizaciones</h2>
@@ -378,7 +378,7 @@
   </section>
 
   @let faqs = faqItems(rates, cryptos);
-  @if (faqs.length > 0 && fresh) {
+  @if (fresh) {
     <section class="card">
       <div class="section-header">
         <h2>Preguntas frecuentes</h2>

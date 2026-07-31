@@ -26,7 +26,6 @@ public class GetLatestRatesQueryHandlerTests
         [Fact]
         public async Task Should_return_LatestRatesResponse_with_mapped_data()
         {
-            // Arrange
             var exchangeRates = new List<ExchangeRate>
             {
                 new()
@@ -69,10 +68,8 @@ public class GetLatestRatesQueryHandlerTests
 
             var sut = new GetLatestRatesQueryHandler(repository, CreateCache());
 
-            // Act
             var result = await sut.Handle(new GetLatestRatesQuery(), CancellationToken.None);
 
-            // Assert
             Assert.NotNull(result);
             Assert.Equal(2, result.ExchangeRates.Count());
             Assert.Equal(1, result.CryptoRates.Count());
@@ -83,7 +80,6 @@ public class GetLatestRatesQueryHandlerTests
         [Fact]
         public async Task Should_return_empty_collections_when_no_data()
         {
-            // Arrange
             var repository = Mock.Of<IRateRepository>();
             Mock.Get(repository)
                 .Setup(r => r.GetLatestRatesAsync(It.IsAny<CancellationToken>()))
@@ -94,10 +90,8 @@ public class GetLatestRatesQueryHandlerTests
 
             var sut = new GetLatestRatesQueryHandler(repository, CreateCache());
 
-            // Act
             var result = await sut.Handle(new GetLatestRatesQuery(), CancellationToken.None);
 
-            // Assert
             Assert.NotNull(result);
             Assert.Empty(result.ExchangeRates);
             Assert.Empty(result.CryptoRates);

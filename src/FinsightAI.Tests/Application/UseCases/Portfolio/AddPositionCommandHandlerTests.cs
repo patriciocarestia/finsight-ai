@@ -21,7 +21,6 @@ public class AddPositionCommandHandlerTests
         [Fact]
         public async Task Should_return_PositionResponse_with_correct_values()
         {
-            // Arrange
             var command = new AddPositionCommand
             {
                 UserId = 1,
@@ -45,10 +44,8 @@ public class AddPositionCommandHandlerTests
 
             var sut = new AddPositionCommandHandler(repository);
 
-            // Act
             var result = await sut.Handle(command, CancellationToken.None);
 
-            // Assert
             Assert.NotNull(result);
             Assert.Equal(42, result.Id);
             Assert.Equal("USD_BLUE", result.AssetType);
@@ -59,7 +56,6 @@ public class AddPositionCommandHandlerTests
         [Fact]
         public async Task Should_call_repository_AddAsync_once()
         {
-            // Arrange
             var command = new AddPositionCommand
             {
                 UserId = 1,
@@ -76,10 +72,8 @@ public class AddPositionCommandHandlerTests
 
             var sut = new AddPositionCommandHandler(repository);
 
-            // Act
             await sut.Handle(command, CancellationToken.None);
 
-            // Assert
             Mock.Get(repository)
                 .Verify(
                     r =>
@@ -94,7 +88,6 @@ public class AddPositionCommandHandlerTests
         [Fact]
         public async Task Should_set_UserId_from_command()
         {
-            // Arrange
             var command = new AddPositionCommand
             {
                 UserId = 99,
@@ -113,10 +106,8 @@ public class AddPositionCommandHandlerTests
 
             var sut = new AddPositionCommandHandler(repository);
 
-            // Act
             await sut.Handle(command, CancellationToken.None);
 
-            // Assert
             Assert.NotNull(savedPosition);
             Assert.Equal(99, savedPosition.UserId);
         }

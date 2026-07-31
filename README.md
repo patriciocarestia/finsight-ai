@@ -4,8 +4,8 @@
 
 ![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)
 ![Angular](https://img.shields.io/badge/Angular-21-DD0031?logo=angular)
-[![API Build](https://github.com/patriciocarestia/finsight-ai/actions/workflows/backend.yml/badge.svg)](https://github.com/patriciocarestia/finsight-ai/actions/workflows/backend.yml)
-[![Web Build](https://github.com/patriciocarestia/finsight-ai/actions/workflows/frontend.yml/badge.svg)](https://github.com/patriciocarestia/finsight-ai/actions/workflows/frontend.yml)
+[![API Build](https://github.com/patriciocarestia/dolar-en-vivo/actions/workflows/backend.yml/badge.svg)](https://github.com/patriciocarestia/dolar-en-vivo/actions/workflows/backend.yml)
+[![Web Build](https://github.com/patriciocarestia/dolar-en-vivo/actions/workflows/frontend.yml/badge.svg)](https://github.com/patriciocarestia/dolar-en-vivo/actions/workflows/frontend.yml)
 ![SQLite](https://img.shields.io/badge/SQLite-003B57?logo=sqlite)
 
 **[Live Demo](https://calm-meadow-03b318b10.7.azurestaticapps.net/)** · **[API Docs](https://finsight-ai-api.azurewebsites.net/swagger)**

@@ -2,12 +2,14 @@
   <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
     <div>
       <h1 class="page-title">Cotizaciones en Argentina</h1>
-      <p class="page-subtitle flex items-center gap-1.5">
+      <p class="page-subtitle flex items-center gap-1.5 flex-wrap">
         @if (!(loading$ | async)) {
           <span class="live-dot"></span>
         }
         @if (lastFetched(); as ts) {
           Actualizado a las {{ ts | date: "HH:mm" }}
+          <span class="text-slate-700">·</span>
+          <span class="text-slate-600">Fuente: DolarAPI, CoinGecko</span>
         } @else {
           Dólar blue, oficial y criptomonedas hoy, en vivo
         }
@@ -47,12 +49,12 @@
   @let rates = this.rates();
   @let cryptos = this.cryptos();
   @let fresh = this.fresh();
-  @let hasHeroData = (rates.length > 0 || cryptos.length > 0) && fresh;
+  @let hasHeroData = rates.length > 0 && fresh;
 
   @if (hasHeroData) {
-    <!-- Headline rates: Dólar Blue, Dólar Oficial, BTC -->
+    <!-- Headline rates: Dólar Blue, Dólar Oficial -->
     <section>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         @if (findRate(rates, "blue"); as blue) {
           <div class="card card-hero card-hero-blue">
             <div class="flex items-start justify-between mb-5">
@@ -115,33 +117,12 @@
             </div>
           </div>
         }
-
-        @if (findCrypto(cryptos, "BTC"); as btc) {
-          <div class="card card-hero card-hero-btc">
-            <div class="flex items-start justify-between mb-5">
-              <div class="flex items-center gap-3">
-                <div class="hero-icon hero-icon-btc w-9 h-9">₿</div>
-                <div>
-                  <p class="font-display font-semibold text-white text-sm leading-tight">Bitcoin</p>
-                  <p class="text-[11px] text-slate-500 mt-0.5">BTC</p>
-                </div>
-              </div>
-              <span class="badge" [class]="btc.changePercent >= 0 ? 'badge-gain' : 'badge-loss'">
-                {{ btc.changePercent >= 0 ? "↑" : "↓" }}&nbsp;{{
-                  (btc.changePercent < 0 ? -btc.changePercent : btc.changePercent) | number: "1.1-1"
-                }}%
-              </span>
-            </div>
-            <div class="hero-value">USD {{ btc.priceUsd | number: "1.0-0" }}</div>
-            <div class="text-slate-500 mt-3 text-sm">ARS {{ btc.priceArs | number: "1.0-0" }}</div>
-          </div>
-        }
       </div>
     </section>
   }
   @if (!hasHeroData) {
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-      @for (i of [1, 2, 3]; track i) {
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      @for (i of [1, 2]; track i) {
         <div class="card card-hero animate-pulse space-y-4">
           <div class="skeleton h-9 w-9 rounded-xl"></div>
           <div class="skeleton h-10 w-[75%]"></div>
@@ -149,8 +130,8 @@
         </div>
       }
     </div>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-      @for (i of [1, 2, 3, 4]; track i) {
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+      @for (i of [1, 2, 3, 4, 5]; track i) {
         <div class="card animate-pulse space-y-3">
           <div class="skeleton h-2 w-[55%]"></div>
           <div class="skeleton h-7 w-[70%]"></div>
@@ -221,7 +202,7 @@
   }
 
   @let restRates = otherRates(rates);
-  @let restCryptos = otherCryptos(cryptos);
+  @let restCryptos = cryptos;
   @if ((restRates.length > 0 || restCryptos.length > 0) && fresh) {
     <section>
       <div class="section-header">
@@ -248,7 +229,7 @@
       </div>
 
       @if (viewMode() === "cards") {
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
           @for (rate of restRates; track rate.id) {
             <app-rate-card
               [label]="getRateLabel(rate.type)"

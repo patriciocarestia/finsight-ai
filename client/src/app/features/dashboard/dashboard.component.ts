@@ -269,10 +269,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return cryptos.find((c) => c.symbol.toUpperCase() === symbol);
   }
 
-  otherCryptos(cryptos: CryptoRate[]): CryptoRate[] {
-    return cryptos.filter((c) => c.symbol.toUpperCase() !== 'BTC');
-  }
-
   chartColor(type: string): string {
     return RATE_CHART_COLORS[type] ?? '#6366f1';
   }

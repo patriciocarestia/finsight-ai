@@ -9,7 +9,7 @@ module.exports = {
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
-        display: ['"Space Grotesk"', "Inter", "sans-serif"],
+        display: ["Inter", "system-ui", "sans-serif"],
       },
     },
   },

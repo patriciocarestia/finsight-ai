@@ -109,11 +109,11 @@ Argentina has multiple parallel exchange rates (Oficial, Blue, MEP, CCL, Cripto)
 ```
 dolar-en-vivo/
 ├── src/
-│   ├── FinsightAI.API/
-│   ├── FinsightAI.Application/
-│   ├── FinsightAI.Domain/
-│   ├── FinsightAI.Infrastructure/
-│   └── FinsightAI.Tests/
+│   ├── DolarEnVivo.API/
+│   ├── DolarEnVivo.Application/
+│   ├── DolarEnVivo.Domain/
+│   ├── DolarEnVivo.Infrastructure/
+│   └── DolarEnVivo.Tests/
 └── client/                      # Angular 21 SPA
     └── src/app/
         ├── core/

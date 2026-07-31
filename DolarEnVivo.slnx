@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/DolarEnVivo.API/DolarEnVivo.API.csproj" />
+    <Project Path="src/DolarEnVivo.Application/DolarEnVivo.Application.csproj" />
+    <Project Path="src/DolarEnVivo.Domain/DolarEnVivo.Domain.csproj" />
+    <Project Path="src/DolarEnVivo.Infrastructure/DolarEnVivo.Infrastructure.csproj" />
+    <Project Path="src/DolarEnVivo.Tests/DolarEnVivo.Tests.csproj" />
+  </Folder>
+</Solution>

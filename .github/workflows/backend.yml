@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths:
       - 'src/**'
-      - 'finsight-ai.sln'
+      - 'dolar-en-vivo.sln'
       - 'nuget.config'
       - '.github/workflows/backend.yml'
 
@@ -22,16 +22,16 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Restore
-        run: dotnet restore finsight-ai.sln
+        run: dotnet restore dolar-en-vivo.sln
 
       - name: Build
-        run: dotnet build finsight-ai.sln --no-restore --configuration Release
+        run: dotnet build dolar-en-vivo.sln --no-restore --configuration Release
 
       - name: Test
-        run: dotnet test finsight-ai.sln --no-build --configuration Release
+        run: dotnet test dolar-en-vivo.sln --no-build --configuration Release
 
       - name: Publish
-        run: dotnet publish src/FinsightAI.API/FinsightAI.API.csproj -c Release -o publish
+        run: dotnet publish src/DolarEnVivo.API/DolarEnVivo.API.csproj -c Release -o publish
 
       - name: Zip
         run: |

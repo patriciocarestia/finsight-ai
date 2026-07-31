@@ -173,9 +173,23 @@ body {
   font-family: 'Inter', sans-serif;
 }
 
-/* Auth page logo mark */
-.logo-mark {
-  background: #0284c7;
+/* Auth split-screen brand panel */
+.auth-panel {
+  @apply relative overflow-hidden rounded-3xl p-10;
+  background: rgba(2, 132, 199, 0.05);
+  border: 1px solid rgba(2, 132, 199, 0.14);
+}
+
+.auth-panel::before {
+  content: '';
+  position: absolute;
+  top: -90px;
+  right: -90px;
+  width: 280px;
+  height: 280px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(2, 132, 199, 0.2), transparent 70%);
+  pointer-events: none;
 }
 
 /* Navbar */
@@ -556,6 +570,15 @@ body {
   background: rgba(15, 23, 42, 0.05);
   border-color: rgba(15, 23, 42, 0.08);
   color: #475569;
+}
+
+/* Auth split-screen brand panel */
+.light .auth-panel {
+  background: rgba(2, 132, 199, 0.04);
+  border-color: rgba(2, 132, 199, 0.12);
+}
+.light .auth-panel::before {
+  background: radial-gradient(circle, rgba(2, 132, 199, 0.12), transparent 70%);
 }
 
 /* Hero cards */

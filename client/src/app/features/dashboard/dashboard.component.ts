@@ -7,6 +7,7 @@ import {
   signal,
   computed,
   effect,
+  afterNextRender,
 } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { AsyncPipe, DecimalPipe, DatePipe, isPlatformBrowser } from '@angular/common';
@@ -85,7 +86,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
   readonly rates = this.exchangeRatesSig;
   readonly cryptos = this.cryptoRatesSig;
   readonly lastFetched = toSignal(this.lastFetched$, { initialValue: null as string | null });
-  readonly fresh = computed(() => this.isFresh(this.lastFetched()));
+
+  // The server always renders as if its own freshly-fetched data is fresh —
+  // "is this stale" only makes sense relative to a real visitor's wall clock,
+  // which the server can't know in advance. If the client's first freshness
+  // check disagreed with that the instant hydration finishes, Angular would
+  // swap the hero @if branch mid-hydration and briefly render both the real
+  // cards and the skeleton at once. Deferring the real check to just after
+  // the first client render lets hydration settle on the server's version
+  // first, then correct it through a normal (non-hydration) view swap.
+  private readonly hydrated = signal(false);
+  readonly fresh = computed(() => !this.hydrated() || this.isFresh(this.lastFetched()));
 
   readonly dayOptions = [7, 30, 90];
   readonly selectedDays = signal(30);
@@ -142,6 +153,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   });
 
   constructor() {
+    afterNextRender(() => this.hydrated.set(true));
+
     if (isPlatformBrowser(inject(PLATFORM_ID))) {
       // Short initial delay lets hydration settle (and the transfer-cached
       // first response render) before forcing a real network refresh, so the
